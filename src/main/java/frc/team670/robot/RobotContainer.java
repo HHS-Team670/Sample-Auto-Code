@@ -2,13 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
-
-import frc.robot.commands.Autos;
-import frc.robot.subsystems.ExampleSubsystem;
-
+package frc.team670.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.team670.robot.commands.Autos;
+import frc.team670.robot.subsystems.ExampleSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,7 +22,6 @@ public class RobotContainer {
     configureBindings();
   }
 
-
   private void configureBindings() {
     // Buttons
   }
@@ -34,7 +31,7 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand(){
+  public Command getAutonomousCommand() {
 
     Command talonFXCommand = Autos.exampleAuto(m_exampleDrivetrain.m_TalonFX);
     // For SparkMax
