@@ -58,6 +58,9 @@ public class XboxJoysticButtons {
   public static POVButton Operator_Dpad_West;
 
   /**
+   * This function must be called before binding any of the buttons
+   * 
+   * 
    * The function `configureJoysticks` sets up various joystick buttons and triggers for both a
    * driver and an operator Xbox controller.
    *
@@ -127,6 +130,9 @@ public class XboxJoysticButtons {
   }
 
   /**
+   * This function must be called before binding any of the buttons
+   * 
+   * 
    * The function `configureJoysticks` sets up various buttons and triggers on an Xbox controller
    * for use in a Java program.
    *
