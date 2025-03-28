@@ -5,8 +5,8 @@
 package frc.team670.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.team670.libs.subsystems.ExampleSubsystem;
 import frc.team670.robot.commands.Autos;
-import frc.team670.robot.subsystems.ExampleSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

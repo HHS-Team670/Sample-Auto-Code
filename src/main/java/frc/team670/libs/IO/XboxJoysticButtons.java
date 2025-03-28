@@ -59,17 +59,16 @@ public class XboxJoysticButtons {
 
   /**
    * This function must be called before binding any of the buttons
-   * 
-   * 
-   * The function `configureJoysticks` sets up various joystick buttons and triggers for both a
+   *
+   * <p>The function `configureJoysticks` sets up various joystick buttons and triggers for both a
    * driver and an operator Xbox controller.
    *
    * @param driver The `driver` parameter in the `configureJoysticks` method is an `XboxController`
-   *     object representing the controller used by the driver of the system. This controller is
+   *     object representing the controller used by the driver of the robot. This controller is
    *     used to set up various joystick buttons, triggers, and D-pad buttons for controlling the
    *     robot.
    * @param operator The `operator` parameter in the `configureJoysticks` method is an
-   *     XboxController object representing the controller used by the operator of the system. This
+   *     XboxController object representing the controller used by the operator of the robot. This
    *     controller is used to set up various joystick buttons, triggers, and D-pad buttons for the
    *     operator to interact with the robot.
    */
@@ -129,12 +128,10 @@ public class XboxJoysticButtons {
     operatorUtils = new ControllerUtils(operator);
   }
 
-  
   /**
    * This function must be called before binding any of the buttons
-   * 
-   * 
-   * The function `configureJoysticks` sets up various buttons and triggers on an Xbox controller
+   *
+   * <p>The function `configureJoysticks` sets up various buttons and triggers on an Xbox controller
    * for use in a Java program.
    *
    * @param driver The `driver` parameter in the `configureJoysticks` method is an `XboxController`
