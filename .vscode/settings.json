@@ -25,5 +25,7 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests"
+  "java.test.defaultConfig": "WPIlibUnitTests",
+  "docwriter.progress.trackFunctions": false,
+  "docwriter.progress.trackMethods": false
 }
