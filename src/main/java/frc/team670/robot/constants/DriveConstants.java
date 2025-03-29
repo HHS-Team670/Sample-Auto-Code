@@ -1,9 +1,9 @@
 package frc.team670.robot.constants;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import frc.team670.libs.constantBases.DrivetrainConstantsBase;
 
-public class DriveConstants {
-  public static SwerveDrivetrainConstants drivetrainConstants;
-  public static SwerveModuleConstants<?, ?, ?>[] moduleConstants;
+public class DriveConstants extends DrivetrainConstantsBase {
+  static{
+    
+  }
 }

@@ -4,7 +4,11 @@
 
 package frc.team670.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.robot.Auton.Autos;
 
 /**
@@ -17,8 +21,14 @@ public class RobotContainer {
 
   Autos autos = new Autos();
 
+  List<Subsystem> subsystems = new ArrayList<>();
+
   public RobotContainer() {
     OI.configureBindings();
+  }
+
+  public void startSubsytems(){
+    
   }
 
   /**

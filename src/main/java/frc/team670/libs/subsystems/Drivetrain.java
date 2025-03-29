@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team670.libs.constantBases.DrivetrainConstantsBase;
 import frc.team670.robot.constants.DriveConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,4 +36,14 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     }
     return motors;
   }
+
+  /**
+   * For this specific subsytem it dosent matter because you will allways have a DriveConstants class
+   * @param constants
+   */
+  public void applyConfig(DrivetrainConstantsBase constants){
+
+  }
+
+  
 }
