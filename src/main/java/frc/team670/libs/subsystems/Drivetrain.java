@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
-    implements Subsystem, MustangSubsytem {
+    implements Subsystem, MotorizedSubsytem {
   public static Drivetrain mInstance = new Drivetrain();
 
   public static Drivetrain getInstance() {
