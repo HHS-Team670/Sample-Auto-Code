@@ -64,9 +64,8 @@ public class XboxJoysticButtons {
    * driver and an operator Xbox controller.
    *
    * @param driver The `driver` parameter in the `configureJoysticks` method is an `XboxController`
-   *     object representing the controller used by the driver of the robot. This controller is
-   *     used to set up various joystick buttons, triggers, and D-pad buttons for controlling the
-   *     robot.
+   *     object representing the controller used by the driver of the robot. This controller is used
+   *     to set up various joystick buttons, triggers, and D-pad buttons for controlling the robot.
    * @param operator The `operator` parameter in the `configureJoysticks` method is an
    *     XboxController object representing the controller used by the operator of the robot. This
    *     controller is used to set up various joystick buttons, triggers, and D-pad buttons for the

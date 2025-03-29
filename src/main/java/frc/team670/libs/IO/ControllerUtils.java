@@ -65,8 +65,6 @@ public class ControllerUtils {
 
   /**
    * @return If there is any movment of the joystics left/right x/y gives a 2% wiggle room for stick
-   *     drift defaults to driver controller assuming that driver controllers index is 0 within the
-   *     instances array of this class
    */
   public boolean joysticMoved() {
     return joysticMoved(index);

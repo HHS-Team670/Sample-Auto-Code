@@ -1,12 +1,8 @@
 package frc.team670.robot.constants;
 
-public enum PositionConstants{
-    HI;
+public enum PositionConstants {
+  HI;
 
-    //
-    private PositionConstants(){
-
-    }
-
-
+  //
+  private PositionConstants() {}
 }
