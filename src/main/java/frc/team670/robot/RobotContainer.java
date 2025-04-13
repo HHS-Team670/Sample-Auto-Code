@@ -4,11 +4,11 @@
 
 package frc.team670.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team670.libs.Health.HealthChecker;
+import frc.team670.libs.subsystems.Drivetrain;
 import frc.team670.robot.Auton.Autos;
 
 /**
@@ -21,14 +21,22 @@ public class RobotContainer {
 
   Autos autos = new Autos();
 
-  List<Subsystem> subsystems = new ArrayList<>();
 
   public RobotContainer() {
     OI.configureBindings();
+    registerSubsytems(Drivetrain.getInstance());
   }
 
-  public void startSubsytems(){
-    
+  public void startSubsytems() {}
+
+  /**
+   * This is to be used within the {@link Robot} class to register subsytems
+   */
+  public void registerSubsytems(Subsystem... subsystems){
+    for (Subsystem s : subsystems){
+      HealthChecker.register(s);
+    }
+    CommandScheduler.getInstance().registerSubsystem(subsystems); //the subsytems periodic is called by the CommandScheduler
   }
 
   /**
@@ -37,6 +45,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autos.get("default");
   }
 }
