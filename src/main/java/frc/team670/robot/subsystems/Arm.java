@@ -29,8 +29,9 @@ public class Arm extends MotorizedSubsytem {
     public Arm() {
         mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig);
         mMotor.setPosition(-26.985);
-
         registerMotors(mMotor);
+
+        motors.add(mMotor);
     }
 
     public boolean getTimeout() {

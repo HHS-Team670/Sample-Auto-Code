@@ -84,6 +84,9 @@ public class Elevator extends MotorizedSubsytem {
 
         // Start at 0
         leadMotor.setPosition(0);
+
+        motors.add(leadMotor);
+        motors.add(followerMotor);
     }
 
     public static synchronized Elevator getInstance() {
