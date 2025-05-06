@@ -6,7 +6,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.team670.libs.UtilityCommands.CopyCommand;
-import frc.team670.libs.subsystems.Drivetrain;
+import frc.team670.robot.subsystems.Drivetrain;
 
 public class ChoreoCommand extends CopyCommand {
 
@@ -17,11 +17,10 @@ public class ChoreoCommand extends CopyCommand {
   public ChoreoCommand(PathPlannerPath path) {
     this.path = path;
     try {
-      PathPlannerTrajectory traj =
-          path.generateTrajectory(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().RawHeading,
-              RobotConfig.fromGUISettings());
+      PathPlannerTrajectory traj = path.generateTrajectory(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().RawHeading,
+          RobotConfig.fromGUISettings());
       initialPose2d = traj.getInitialPose();
       command = AutoBuilder.followPath(path);
       setCommand(command);
