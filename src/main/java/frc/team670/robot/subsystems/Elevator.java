@@ -138,12 +138,12 @@ public class Elevator extends MotorizedSubsytem {
         }
     }
 
-    private void checkInterference() {
+    protected void checkInterference() {
         if (!hasBeenZeroed) {
             return;
         }
-        double currentArmAngle = Arm.getInstance().getCurrentAngleInDegrees();
-        double currentTilterAngle = Claw.getInstance().getTilter().getCurrentAngleInDegrees();
+        double currentArmAngle = Arm.getInstance().getMotorPositionInDegrees();
+        double currentTilterAngle = Tilter.getInstance().getMotorPositionInDegrees();
         // If no interference, continue moving
         if ((currentArmAngle > 0 && currentArmAngle < 90)
                 || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {

@@ -9,9 +9,6 @@ import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ArmConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorizedSubsytem {
@@ -185,23 +182,7 @@ public class Arm extends MotorizedSubsytem {
     }
 
     public void periodic() {
-        if (!Elevator.getInstance().hasReachedTargetPosition()) {
-            // If interference, move towards arm safe position
-            if (getMotorPositionInDegrees() < -45 || getMotorPositionInDegrees() > 180) {
-                Logger.recordOutput("Arm/ArmSafe", false);
-                moveTo(
-                        mSetpoint > getMotorRotationsFromAngle(-40)
-                                ? mSetpoint
-                                : getMotorRotationsFromAngle(-40));
-            }
-        } else if ((mSetpoint != kNoSetPoint) && Elevator.getInstance().hasReachedTargetPosition()) {
-            Logger.recordOutput("Arm/ArmSafe", true);
-            // Continue moving assuming there is a setpoint
-            moveTo(mSetpoint);
-        } else {
-
-            Logger.recordOutput("Arm/ArmSafe", true);
-        }
+        checkInterference();
     }
 
     @Override
@@ -226,6 +207,26 @@ public class Arm extends MotorizedSubsytem {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void checkInterference() {
+        if (!Elevator.getInstance().hasReachedTargetPosition()) {
+            // If interference, move towards arm safe position
+            if (getMotorPositionInDegrees() < -45 || getMotorPositionInDegrees() > 180) {
+                Logger.recordOutput("Arm/ArmSafe", false);
+                moveTo(
+                        mSetpoint > getMotorRotationsFromAngle(-40)
+                                ? mSetpoint
+                                : getMotorRotationsFromAngle(-40));
+            }
+        } else if ((mSetpoint != kNoSetPoint) && Elevator.getInstance().hasReachedTargetPosition()) {
+            Logger.recordOutput("Arm/ArmSafe", true);
+            // Continue moving assuming there is a setpoint
+            moveTo(mSetpoint);
+        } else {
+            Logger.recordOutput("Arm/ArmSafe", true);
+        }
     }
 
 }

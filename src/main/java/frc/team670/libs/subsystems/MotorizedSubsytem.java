@@ -42,7 +42,7 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    *         first motor in the
    *         list of motors
    */
-  protected double getMotorPostion() {
+  public double getMotorPostion() {
     return motors.get(0).getPosition().getValueAsDouble();
   }
 
@@ -57,7 +57,7 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    *         degrees using the gear ratio
    *         and a method from the `MustangMath` class.
    */
-  protected double getMotorPositionInDegrees() {
+  public double getMotorPositionInDegrees() {
     return MustangMath.getDegreesFromRotations(gearRatio, getMotorPostion());
   }
 
