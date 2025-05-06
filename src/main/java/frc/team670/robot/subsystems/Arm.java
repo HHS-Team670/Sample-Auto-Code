@@ -24,7 +24,7 @@ public class Arm extends MotorizedSubsytem {
 
     private double offset = 0;
 
-    private static Arm mInstance;
+    private static Arm mInstance = new Arm();
 
     public Arm() {
         mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig);
@@ -38,8 +38,7 @@ public class Arm extends MotorizedSubsytem {
         return false;
     }
 
-    public static synchronized Arm getInstance() {
-        mInstance = mInstance == null ? new Arm() : mInstance;
+    public static Arm getInstance() {
         return mInstance;
     }
 

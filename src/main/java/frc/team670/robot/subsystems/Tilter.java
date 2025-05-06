@@ -37,6 +37,12 @@ public class Tilter extends MotorizedSubsytem {
 
     private Tilter.Position pos = Position.DEFAULT;
 
+    private static Tilter mInstance = new Tilter();
+
+    public static Tilter getInstance() {
+        return mInstance;
+    }
+
     public Tilter() {
         this.mSetpoint = kNoSetPoint;
 

@@ -41,10 +41,9 @@ public class Claw extends MotorizedSubsytem {
 
     private LED led = LED.getInstance();
 
-    private static Claw mInstance;
+    private static Claw mInstance = new Claw();
 
-    public static synchronized Claw getInstance() {
-        mInstance = mInstance == null ? new Claw() : mInstance;
+    public static Claw getInstance() {
         return mInstance;
     }
 

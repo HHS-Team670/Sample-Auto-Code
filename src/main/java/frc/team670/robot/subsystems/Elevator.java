@@ -31,7 +31,7 @@ public class Elevator extends MotorizedSubsytem {
     private DigitalInput bottomLimitSwitch;
     private DigitalInput topLimitSwitch;
 
-    private static Elevator mInstance;
+    private static Elevator mInstance = new Elevator();
 
     public ElevatorState state = ElevatorState.STOW;
     private double height;
@@ -89,8 +89,7 @@ public class Elevator extends MotorizedSubsytem {
         motors.add(followerMotor);
     }
 
-    public static synchronized Elevator getInstance() {
-        mInstance = mInstance == null ? new Elevator() : mInstance;
+    public static Elevator getInstance() {
         return mInstance;
     }
 
