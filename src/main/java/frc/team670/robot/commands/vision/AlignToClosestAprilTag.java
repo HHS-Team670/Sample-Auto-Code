@@ -8,9 +8,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
-import frc.team670.robot.subsystems.Vision;
 import frc.team670.robot.subsystems.Drivetrain;
-import org.littletonrobotics.junction.Logger;
+import frc.team670.robot.subsystems.Vision;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AlignToClosestAprilTag extends Command {
@@ -24,15 +23,24 @@ public class AlignToClosestAprilTag extends Command {
 
     public static PhotonTrackedTarget aprilTag;
     private Vision mVision;
-    String nameAssignment;
+    String cameraName;
 
     SwerveRequest.RobotCentric drive;
-
     private Drivetrain mDrivetrain;
 
     private double xDist = 0;
     private double yDist = 0;
     private double rotation = 0;
+
+    double xValue = 0;
+    double yValue = 0;
+    double rotationValue = 0;
+
+    private boolean hasFoundAprilTag;
+
+    private double metersBack;
+
+    // Adjust these modifiers as needed
     private static final double xSpeedModifier = 1;
     private static final double ySpeedModifier = 2.2;
     private static final double rotationSpeedModifier = 4;
@@ -40,32 +48,33 @@ public class AlignToClosestAprilTag extends Command {
     private static final double yAdjustment = 0;
     private static final double rotationAdjustment = 0;
 
-    private boolean hasFoundAprilTag;
+    // These describe how far away from being perfectly aligned the robot should go
+    // to (robot centric)
+    private static final double xOffset = 0;
+    private static final double yOffset = 0;
 
-    private double metersBack;
-
-    double xValue = 0;
-    double yValue = 0;
-    double rotationValue = 0;
-
-    public AlignToClosestAprilTag(
-            Drivetrain mDrivetrain, Vision mVision) {
+    public AlignToClosestAprilTag(boolean isLevelL2) {
+        this.mDrivetrain = Drivetrain.getInstance();
+        this.mVision = Vision.getInstance();
         addRequirements(mVision, mDrivetrain);
-        this.mDrivetrain = mDrivetrain;
-        this.mVision = mVision;
+
         this.drive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     }
 
     @Override
     public void initialize() {
         mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
+
         if (OI.cameraSide == CAMERA_SIDE.LEFT) {
-            this.nameAssignment = "ArducamL";
+            this.cameraName = "ArducamL";
+            // Assign meters back to how far the camera is from the front of the bumper
             metersBack = Units.inchesToMeters(6.3);
         } else if (OI.cameraSide == CAMERA_SIDE.RIGHT) {
-            this.nameAssignment = "ArducamR";
+            this.cameraName = "ArducamR";
+            // Assign meters back to how far the camera is from the front of the bumper
             metersBack = Units.inchesToMeters(6.3);
         }
+
         hasFoundAprilTag = false;
         AligningToAprilTag = true;
         mVision.lastSeenAprilTagLeftCam = null;
@@ -78,17 +87,17 @@ public class AlignToClosestAprilTag extends Command {
 
     @Override
     public void execute() {
-        aprilTag = nameAssignment == "ArducamL" ? mVision.leftCamAprilTag : mVision.rightCamAprilTag;
+        aprilTag = cameraName == "ArducamL" ? mVision.leftCamAprilTag : mVision.rightCamAprilTag;
 
         if (aprilTag != null) {
-            Logger.recordOutput("Vision/APRILTAGID", aprilTag.getFiducialId());
             hasFoundAprilTag = true;
             Transform3d target = aprilTag.getBestCameraToTarget();
-            xDist = target.getX() - metersBack;
+
+            xDist = target.getX() - metersBack - xOffset;
             if (xDist < 0) {
                 xDist = 0;
             }
-            yDist = target.getY();
+            yDist = target.getY() - yOffset;
             rotation = target.getRotation().toRotation2d().getRadians();
             if (rotation < 0) {
                 rotation = Math.PI + rotation;
@@ -97,22 +106,19 @@ public class AlignToClosestAprilTag extends Command {
             }
         } else if (hasFoundAprilTag) {
             try {
-                Pose2d lastAprilTag = nameAssignment == "ArducamL"
+                Pose2d lastAprilTag = cameraName == "ArducamL"
                         ? mVision.lastSeenAprilTagLeftCam
                         : mVision.lastSeenAprilTagRightCam;
 
-                Pose2d lastRobotCentriChange = nameAssignment == "ArducamL"
+                Pose2d lastRobotCentriChange = cameraName == "ArducamL"
                         ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
                         : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
                 double xChange = lastRobotCentriChange.getX();
                 double yChange = lastRobotCentriChange.getY();
 
-                Logger.recordOutput("Vision/XChange", xChange);
-                Logger.recordOutput("Vision/YChange", yChange);
-
-                xDist = lastAprilTag.getX() - xChange - metersBack;
-                yDist = lastAprilTag.getY() - yChange;
+                xDist = lastAprilTag.getX() - xChange - metersBack - xOffset;
+                yDist = lastAprilTag.getY() - yChange - yOffset;
 
                 double lastAprilTagRotation = lastAprilTag.getRotation().getRadians();
                 if (lastAprilTagRotation > 0) {
@@ -122,7 +128,6 @@ public class AlignToClosestAprilTag extends Command {
                 }
                 rotation = lastAprilTagRotation + (lastRobotCentriChange.getRotation().getRadians());
             } catch (Exception error) {
-
             }
         }
 
@@ -130,18 +135,9 @@ public class AlignToClosestAprilTag extends Command {
             rotation = 0;
         }
 
-        Logger.recordOutput("Vision/HasSeenAprilTag", hasFoundAprilTag);
-        Logger.recordOutput("Vision/XDist", xDist);
-        Logger.recordOutput("Vision/YDist", yDist);
-        Logger.recordOutput("Vision/RotationOffset", Units.radiansToDegrees(rotation));
-
         xValue = (xDist * xSpeedModifier + xAdjustment);
         yValue = (yDist * ySpeedModifier + yAdjustment);
         rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
-
-        Logger.recordOutput("Vision/XValue", xValue);
-        Logger.recordOutput("Vision/YValue", yValue);
-        Logger.recordOutput("Vision/RotationValue", rotationValue);
 
         mDrivetrain.setControl(
                 drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));
@@ -149,6 +145,7 @@ public class AlignToClosestAprilTag extends Command {
 
     @Override
     public boolean isFinished() {
+        // Exit switch toggle this in another command
         if (!AligningToAprilTag) {
             return true;
         }
