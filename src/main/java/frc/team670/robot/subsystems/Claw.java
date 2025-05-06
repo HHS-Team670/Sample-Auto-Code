@@ -28,7 +28,7 @@ public class Claw extends MotorizedSubsytem {
 
     protected Timer m_timer = new Timer();
 
-    private TalonFX motor;
+    private TalonFX mMotor;
     private Claw.Status status;
     private final String clawStateKey = "Claw/State";
 
@@ -50,8 +50,8 @@ public class Claw extends MotorizedSubsytem {
 
     public Claw() {
         status = Status.IDLE;
-        TalonFX motor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig);
-        motors.add(motor);
+        mMotor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig);
+        motors.add(mMotor);
     }
 
     public boolean hasCoral() {
@@ -82,24 +82,24 @@ public class Claw extends MotorizedSubsytem {
         Logger.recordOutput("Claw/Speed", intakingSpeed);
         encoderDebouncer = new Debouncer(0.5);
         encoderDebouncerAuto = new Debouncer(0.3);
-        motor.set(intakingSpeed);
+        mMotor.set(intakingSpeed);
     }
 
     private void eject() {
         Logger.recordOutput("Claw/Speed", ejectingSpeed);
-        motor.set(ejectingSpeed);
+        mMotor.set(ejectingSpeed);
         hasCoral = false;
     }
 
     private void idle() {
         Logger.recordOutput("Claw/Speed", idleSpeed);
-        motor.set(0);
+        mMotor.set(0);
     }
 
-    /** Checking for hardware breaks with the motor */
+    /** Checking for hardware breaks with the mMotor */
     @Override
     public Health checkHealth() {
-        if (motor == null || !motor.isAlive()) {
+        if (mMotor == null || !mMotor.isAlive()) {
             return Health.RED;
         }
         return Health.GREEN;
@@ -110,11 +110,11 @@ public class Claw extends MotorizedSubsytem {
         switch (status) {
             case INTAKING:
                 if (DriverStation.isAutonomousEnabled()) {
-                    if (encoderDebouncerAuto.calculate(motor.getVelocity().getValueAsDouble() < 1)) {
+                    if (encoderDebouncerAuto.calculate(mMotor.getVelocity().getValueAsDouble() < 1)) {
                         hasCoral = true;
                         setClawMode(Claw.Status.IDLE);
                     }
-                } else if (encoderDebouncer.calculate(motor.getVelocity().getValueAsDouble() < 1)) {
+                } else if (encoderDebouncer.calculate(mMotor.getVelocity().getValueAsDouble() < 1)) {
                     hasCoral = true;
                     setClawMode(Claw.Status.IDLE);
                     if (DriverStation.isTeleopEnabled()) {
@@ -126,24 +126,27 @@ public class Claw extends MotorizedSubsytem {
                 if (m_timer.hasElapsed(ClawConstants.kEjectTime)) {
                     m_timer.stop();
                     m_timer.reset();
-                    motor.set(0);
+                    mMotor.set(0);
                     if (DriverStation.isTeleopEnabled()) {
                         led.solidhsv(LEDColor.YELLOW);
                     }
                 }
                 break;
             default:
-                motor.set(0);
+                mMotor.set(0);
                 break;
         }
     }
 
     @Override
     public void debugSubsystem() {
-        Logger.recordOutput(currentKey, motor.getStatorCurrent().getValueAsDouble());
         Logger.recordOutput(clawStateKey, status.toString());
         Logger.recordOutput("Claw/has coral", hasCoral);
-        Logger.recordOutput("Claw/Velocity", motor.getVelocity().getValueAsDouble());
-        Logger.recordOutput("Claw/Current", motor.getStatorCurrent().getValueAsDouble());
+        Logger.recordOutput("Claw/Velocity", mMotor.getVelocity().getValueAsDouble());
+        Logger.recordOutput("Claw/Current", mMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected void checkInterference() {
     }
 }
