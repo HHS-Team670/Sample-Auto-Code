@@ -155,7 +155,7 @@ public class Arm extends MotorizedSubsytem {
     }
 
     public boolean hasReachedTargetPosition() {
-        return (MustangMath.doubleEqual(
+        return (MustangMath.doublesEqual(
                 getMotorPostion(), mSetpoint, ArmConstants.kAllowedErrorDegrees));
     }
 

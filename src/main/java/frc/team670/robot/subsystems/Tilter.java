@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.team670.libs.Health.Health;
+import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.TilterConstants;
@@ -140,7 +141,7 @@ public class Tilter extends MotorizedSubsytem {
     }
 
     public boolean hasReachedTargetPosition() {
-        return (MathUtils.doublesEqual(
+        return (MustangMath.doublesEqual(
                 getUnadjustedPosition(), mSetpoint, TilterConstants.kAllowedErrorRotations));
     }
 
