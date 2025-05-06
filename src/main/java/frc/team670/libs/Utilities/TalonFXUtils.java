@@ -8,35 +8,50 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class TalonFXUtils {
 
-    public static void holdMotor(TalonFX motor) {
-        motor.setControl(new MotionMagicVoltage(0).withPosition(motor.getPosition().getValueAsDouble()));
+  public static void holdMotor(TalonFX motor) {
+    motor.setControl(
+        new MotionMagicVoltage(0).withPosition(motor.getPosition().getValueAsDouble()));
+  }
+
+  public static TalonFXConfiguration getConfig(TalonFX motor) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    motor.getConfigurator().refresh(config);
+    return config;
+  }
+
+  public static void applyConfig(TalonFX motor, TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 30; ++i) {
+      status = motor.getConfigurator().apply(config);
+      if (status.isOK()) {
+        break;
+      }
+    }
+    if (!status.isOK()) {
+      ConsoleLogger.consoleError(
+          "Motor configuration failed: " + status + "\n Motor ID:" + motor.getDeviceID());
+    }
+  }
+
+  public static boolean isHealthy(TalonFX motor) {
+    return (motor != null && motor.isAlive());
+  }
+
+  public static TalonFX construct(int motorID, TalonFXConfiguration config) {
+    TalonFX motor = new TalonFX(motorID);
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 30; ++i) {
+      status = motor.getConfigurator().apply(config);
+      if (status.isOK()) {
+        break;
+      }
+    }
+    if (!status.isOK()) {
+      ConsoleLogger.consoleError(
+          "Motor configuration failed: " + status + "\n Motor ID:" + motorID);
     }
 
-    public static TalonFXConfiguration getConfig(TalonFX motor) {
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        motor.getConfigurator().refresh(config);
-        return config;
-    }
-
-    public static boolean isHealthy(TalonFX motor) {
-        return (motor != null && motor.isAlive());
-    }
-
-    public static TalonFX construct(int motorID, TalonFXConfiguration config) {
-        TalonFX motor = new TalonFX(motorID);
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
-        for (int i = 0; i < 30; ++i) {
-            status = motor.getConfigurator().apply(config);
-            if (status.isOK()) {
-                break;
-            }
-        }
-        if (!status.isOK()) {
-            ConsoleLogger.consoleError("Motor configuration failed: " + status + "\n Motor ID:" + motorID);
-        }
-
-        motor.setNeutralMode(NeutralModeValue.Brake);
-        return motor;
-    }
-
+    motor.setNeutralMode(NeutralModeValue.Brake);
+    return motor;
+  }
 }

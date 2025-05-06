@@ -13,152 +13,155 @@ import frc.team670.robot.subsystems.Vision;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AlignToClosestAprilTag extends Command {
-    public enum CAMERA_SIDE {
-        LEFT,
-        RIGHT,
-        CENTER
+  public enum CAMERA_SIDE {
+    LEFT,
+    RIGHT,
+    CENTER
+  }
+
+  public static boolean AligningToAprilTag = false;
+
+  public static PhotonTrackedTarget aprilTag;
+  private Vision mVision;
+  String cameraName;
+
+  SwerveRequest.RobotCentric drive;
+  private Drivetrain mDrivetrain;
+
+  private double xDist = 0;
+  private double yDist = 0;
+  private double rotation = 0;
+
+  double xValue = 0;
+  double yValue = 0;
+  double rotationValue = 0;
+
+  private boolean hasFoundAprilTag;
+
+  private double metersBack;
+
+  // Adjust these modifiers as needed
+  private static final double xSpeedModifier = 1;
+  private static final double ySpeedModifier = 2.2;
+  private static final double rotationSpeedModifier = 4;
+  private static final double xAdjustment = 0.25;
+  private static final double yAdjustment = 0;
+  private static final double rotationAdjustment = 0;
+
+  // These describe how far away from being perfectly aligned the robot should go
+  // to (robot centric)
+  private static final double xOffset = 0;
+  private static final double yOffset = 0;
+
+  public AlignToClosestAprilTag(boolean isLevelL2) {
+    this.mDrivetrain = Drivetrain.getInstance();
+    this.mVision = Vision.getInstance();
+    addRequirements(mVision, mDrivetrain);
+
+    this.drive =
+        new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  }
+
+  @Override
+  public void initialize() {
+    mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
+
+    if (OI.cameraSide == CAMERA_SIDE.LEFT) {
+      this.cameraName = "ArducamL";
+      // Assign meters back to how far the camera is from the front of the bumper
+      metersBack = Units.inchesToMeters(6.3);
+    } else if (OI.cameraSide == CAMERA_SIDE.RIGHT) {
+      this.cameraName = "ArducamR";
+      // Assign meters back to how far the camera is from the front of the bumper
+      metersBack = Units.inchesToMeters(6.3);
     }
 
-    public static boolean AligningToAprilTag = false;
+    hasFoundAprilTag = false;
+    AligningToAprilTag = true;
+    mVision.lastSeenAprilTagLeftCam = null;
+    mVision.lastSeenAprilTagRightCam = null;
+    mVision.lastRobotPoseLeftCam = new Pose2d(0, 0, new Rotation2d());
+    mVision.lastRobotPoseRightCam = new Pose2d(0, 0, new Rotation2d());
+    mVision.robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d());
+    mVision.robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d());
+  }
 
-    public static PhotonTrackedTarget aprilTag;
-    private Vision mVision;
-    String cameraName;
+  @Override
+  public void execute() {
+    aprilTag = cameraName == "ArducamL" ? mVision.leftCamAprilTag : mVision.rightCamAprilTag;
 
-    SwerveRequest.RobotCentric drive;
-    private Drivetrain mDrivetrain;
+    if (aprilTag != null) {
+      hasFoundAprilTag = true;
+      Transform3d target = aprilTag.getBestCameraToTarget();
 
-    private double xDist = 0;
-    private double yDist = 0;
-    private double rotation = 0;
+      xDist = target.getX() - metersBack - xOffset;
+      if (xDist < 0) {
+        xDist = 0;
+      }
+      yDist = target.getY() - yOffset;
+      rotation = target.getRotation().toRotation2d().getRadians();
+      if (rotation < 0) {
+        rotation = Math.PI + rotation;
+      } else {
+        rotation = Math.PI - rotation;
+      }
+    } else if (hasFoundAprilTag) {
+      try {
+        Pose2d lastAprilTag =
+            cameraName == "ArducamL"
+                ? mVision.lastSeenAprilTagLeftCam
+                : mVision.lastSeenAprilTagRightCam;
 
-    double xValue = 0;
-    double yValue = 0;
-    double rotationValue = 0;
+        Pose2d lastRobotCentriChange =
+            cameraName == "ArducamL"
+                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
-    private boolean hasFoundAprilTag;
+        double xChange = lastRobotCentriChange.getX();
+        double yChange = lastRobotCentriChange.getY();
 
-    private double metersBack;
+        xDist = lastAprilTag.getX() - xChange - metersBack - xOffset;
+        yDist = lastAprilTag.getY() - yChange - yOffset;
 
-    // Adjust these modifiers as needed
-    private static final double xSpeedModifier = 1;
-    private static final double ySpeedModifier = 2.2;
-    private static final double rotationSpeedModifier = 4;
-    private static final double xAdjustment = 0.25;
-    private static final double yAdjustment = 0;
-    private static final double rotationAdjustment = 0;
-
-    // These describe how far away from being perfectly aligned the robot should go
-    // to (robot centric)
-    private static final double xOffset = 0;
-    private static final double yOffset = 0;
-
-    public AlignToClosestAprilTag(boolean isLevelL2) {
-        this.mDrivetrain = Drivetrain.getInstance();
-        this.mVision = Vision.getInstance();
-        addRequirements(mVision, mDrivetrain);
-
-        this.drive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    }
-
-    @Override
-    public void initialize() {
-        mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
-
-        if (OI.cameraSide == CAMERA_SIDE.LEFT) {
-            this.cameraName = "ArducamL";
-            // Assign meters back to how far the camera is from the front of the bumper
-            metersBack = Units.inchesToMeters(6.3);
-        } else if (OI.cameraSide == CAMERA_SIDE.RIGHT) {
-            this.cameraName = "ArducamR";
-            // Assign meters back to how far the camera is from the front of the bumper
-            metersBack = Units.inchesToMeters(6.3);
+        double lastAprilTagRotation = lastAprilTag.getRotation().getRadians();
+        if (lastAprilTagRotation > 0) {
+          lastAprilTagRotation -= Math.PI;
+        } else {
+          lastAprilTagRotation += Math.PI;
         }
-
-        hasFoundAprilTag = false;
-        AligningToAprilTag = true;
-        mVision.lastSeenAprilTagLeftCam = null;
-        mVision.lastSeenAprilTagRightCam = null;
-        mVision.lastRobotPoseLeftCam = new Pose2d(0, 0, new Rotation2d());
-        mVision.lastRobotPoseRightCam = new Pose2d(0, 0, new Rotation2d());
-        mVision.robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d());
-        mVision.robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d());
+        rotation = lastAprilTagRotation + (lastRobotCentriChange.getRotation().getRadians());
+      } catch (Exception error) {
+      }
     }
 
-    @Override
-    public void execute() {
-        aprilTag = cameraName == "ArducamL" ? mVision.leftCamAprilTag : mVision.rightCamAprilTag;
-
-        if (aprilTag != null) {
-            hasFoundAprilTag = true;
-            Transform3d target = aprilTag.getBestCameraToTarget();
-
-            xDist = target.getX() - metersBack - xOffset;
-            if (xDist < 0) {
-                xDist = 0;
-            }
-            yDist = target.getY() - yOffset;
-            rotation = target.getRotation().toRotation2d().getRadians();
-            if (rotation < 0) {
-                rotation = Math.PI + rotation;
-            } else {
-                rotation = Math.PI - rotation;
-            }
-        } else if (hasFoundAprilTag) {
-            try {
-                Pose2d lastAprilTag = cameraName == "ArducamL"
-                        ? mVision.lastSeenAprilTagLeftCam
-                        : mVision.lastSeenAprilTagRightCam;
-
-                Pose2d lastRobotCentriChange = cameraName == "ArducamL"
-                        ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-                        : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
-
-                double xChange = lastRobotCentriChange.getX();
-                double yChange = lastRobotCentriChange.getY();
-
-                xDist = lastAprilTag.getX() - xChange - metersBack - xOffset;
-                yDist = lastAprilTag.getY() - yChange - yOffset;
-
-                double lastAprilTagRotation = lastAprilTag.getRotation().getRadians();
-                if (lastAprilTagRotation > 0) {
-                    lastAprilTagRotation -= Math.PI;
-                } else {
-                    lastAprilTagRotation += Math.PI;
-                }
-                rotation = lastAprilTagRotation + (lastRobotCentriChange.getRotation().getRadians());
-            } catch (Exception error) {
-            }
-        }
-
-        if (Math.abs(rotation) < Units.degreesToRadians(2)) {
-            rotation = 0;
-        }
-
-        xValue = (xDist * xSpeedModifier + xAdjustment);
-        yValue = (yDist * ySpeedModifier + yAdjustment);
-        rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
-
-        mDrivetrain.setControl(
-                drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));
+    if (Math.abs(rotation) < Units.degreesToRadians(2)) {
+      rotation = 0;
     }
 
-    @Override
-    public boolean isFinished() {
-        // Exit switch toggle this in another command
-        if (!AligningToAprilTag) {
-            return true;
-        }
+    xValue = (xDist * xSpeedModifier + xAdjustment);
+    yValue = (yDist * ySpeedModifier + yAdjustment);
+    rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
 
-        return (Math.abs(yDist) < 0.02) && (Math.abs(xDist) < 0.08) && hasFoundAprilTag;
+    mDrivetrain.setControl(
+        drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));
+  }
+
+  @Override
+  public boolean isFinished() {
+    // Exit switch toggle this in another command
+    if (!AligningToAprilTag) {
+      return true;
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0).withRotationalRate(0));
-        xValue = 0;
-        yValue = 0;
-        rotationValue = 0;
-        AligningToAprilTag = false;
-    }
+    return (Math.abs(yDist) < 0.02) && (Math.abs(xDist) < 0.08) && hasFoundAprilTag;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0).withRotationalRate(0));
+    xValue = 0;
+    yValue = 0;
+    rotationValue = 0;
+    AligningToAprilTag = false;
+  }
 }

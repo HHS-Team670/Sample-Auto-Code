@@ -4,21 +4,18 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
-
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
-import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.DrivetrainConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
-    implements Subsystem, MotorizedSubsytem, HealthySubsytem, DebugSubsytem {
+    implements Subsystem, HealthySubsytem, DebugSubsytem {
   public static Drivetrain mInstance = new Drivetrain();
 
   public static Drivetrain getInstance() {
@@ -37,7 +34,6 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         DrivetrainConstants.BackRight);
   }
 
-  @Override
   public List<TalonFX> getMotors() {
     List<TalonFX> motors = new ArrayList<>();
     for (SwerveModule<TalonFX, TalonFX, CANcoder> m : getModules()) {
@@ -50,16 +46,15 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   @Override
   public void periodic() {
     HealthChecker.reportHealth(this, checkHealth());
+    debugSubsystem();
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a
-   * DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
    * class
    *
    * @param constants
    */
-
   Health[] motorHealths = new Health[getModules().length * 2];
 
   @Override
@@ -83,7 +78,5 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     return healthState;
   }
 
-  public void debugSubsystem() {
-
-  }
+  public void debugSubsystem() {}
 }
