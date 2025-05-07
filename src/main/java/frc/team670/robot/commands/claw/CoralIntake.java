@@ -6,8 +6,6 @@ import frc.team670.robot.constants.RobotPosition;
 
 public class CoralIntake extends ParallelCommandGroup {
   public CoralIntake() {
-    super(
-        new MoveToRobotPosition(RobotPosition.STATION),
-        new StartClawIntake());
+    super(new MoveToRobotPosition(RobotPosition.STATION), new StartClawIntake());
   }
 }

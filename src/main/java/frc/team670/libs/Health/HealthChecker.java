@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Utilities.ConsoleLogger;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.littletonrobotics.junction.Logger;
 
 public class HealthChecker {

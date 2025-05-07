@@ -24,13 +24,14 @@ public class AlignToClosestAprilTag extends Command {
   public static boolean AligningToAprilTag = false;
 
   public static PhotonTrackedTarget aprilTag;
-  private Vision mVision;
+  private Vision mVision = Vision.getInstance();
   String cameraName;
 
   private Timer timer = new Timer();
 
-  SwerveRequest.RobotCentric drive;
-  private Drivetrain mDrivetrain;
+  SwerveRequest.RobotCentric drive =
+      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   private double xDist = 0;
   private double yDist = 0;
@@ -43,6 +44,8 @@ public class AlignToClosestAprilTag extends Command {
   private boolean hasFoundAprilTag;
 
   private double metersBack;
+
+  private CAMERA_SIDE cameraSide = null;
 
   // Adjust these modifiers as needed
   private static final double xSpeedModifier = 1;
@@ -58,11 +61,12 @@ public class AlignToClosestAprilTag extends Command {
   private static final double yOffset = 0;
 
   public AlignToClosestAprilTag(boolean isLevelL2) {
-    this.mDrivetrain = Drivetrain.getInstance();
-    this.mVision = Vision.getInstance();
     addRequirements(mVision, mDrivetrain);
+  }
 
-    this.drive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  public AlignToClosestAprilTag(boolean isLevelL2, CAMERA_SIDE cameraSide) {
+    addRequirements(mVision, mDrivetrain);
+    this.cameraSide = cameraSide;
   }
 
   @Override
@@ -71,11 +75,13 @@ public class AlignToClosestAprilTag extends Command {
 
     mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
 
-    if (OI.cameraSide == CAMERA_SIDE.LEFT) {
+    CAMERA_SIDE cameraSideToUse = (this.cameraSide == null ? OI.cameraSide : this.cameraSide);
+
+    if (cameraSideToUse == CAMERA_SIDE.LEFT) {
       this.cameraName = "ArducamL";
       // Assign meters back to how far the camera is from the front of the bumper
       metersBack = Units.inchesToMeters(6.3);
-    } else if (OI.cameraSide == CAMERA_SIDE.RIGHT) {
+    } else if (cameraSideToUse == CAMERA_SIDE.RIGHT) {
       this.cameraName = "ArducamR";
       // Assign meters back to how far the camera is from the front of the bumper
       metersBack = Units.inchesToMeters(6.3);
@@ -112,13 +118,15 @@ public class AlignToClosestAprilTag extends Command {
       }
     } else if (hasFoundAprilTag) {
       try {
-        Pose2d lastAprilTag = cameraName == "ArducamL"
-            ? mVision.lastSeenAprilTagLeftCam
-            : mVision.lastSeenAprilTagRightCam;
+        Pose2d lastAprilTag =
+            cameraName == "ArducamL"
+                ? mVision.lastSeenAprilTagLeftCam
+                : mVision.lastSeenAprilTagRightCam;
 
-        Pose2d lastRobotCentriChange = cameraName == "ArducamL"
-            ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-            : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
+        Pose2d lastRobotCentriChange =
+            cameraName == "ArducamL"
+                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
         double xChange = lastRobotCentriChange.getX();
         double yChange = lastRobotCentriChange.getY();

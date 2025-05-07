@@ -5,21 +5,21 @@ import frc.team670.robot.OI;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 
 public class AlgaeManipulatorIntake extends InstantCommand {
-    private AlgaeManipulator mAlgaeManipulator = AlgaeManipulator.getInstance();
-    private boolean isIntaking;
+  private AlgaeManipulator mAlgaeManipulator = AlgaeManipulator.getInstance();
+  private boolean isIntaking;
 
-    public AlgaeManipulatorIntake(boolean isIntaking) {
-        addRequirements(mAlgaeManipulator);
-        this.isIntaking = isIntaking;
-    }
+  public AlgaeManipulatorIntake(boolean isIntaking) {
+    addRequirements(mAlgaeManipulator);
+    this.isIntaking = isIntaking;
+  }
 
-    @Override
-    public void initialize() {
-        if (isIntaking) {
-            mAlgaeManipulator.setAlgaeManipulatorMode(AlgaeManipulator.Mode.INTAKING);
-        } else {
-            mAlgaeManipulator.setAlgaeManipulatorMode(AlgaeManipulator.Mode.EJECTING);
-            OI.coralModeOn = true;
-        }
+  @Override
+  public void initialize() {
+    if (isIntaking) {
+      mAlgaeManipulator.setAlgaeManipulatorMode(AlgaeManipulator.Mode.INTAKING);
+    } else {
+      mAlgaeManipulator.setAlgaeManipulatorMode(AlgaeManipulator.Mode.EJECTING);
+      OI.coralModeOn = true;
     }
+  }
 }

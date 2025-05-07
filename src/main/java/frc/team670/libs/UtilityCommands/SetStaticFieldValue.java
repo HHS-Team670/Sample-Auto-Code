@@ -5,18 +5,18 @@ import frc.team670.libs.Utilities.TypeUtils;
 
 public class SetStaticFieldValue extends InstantCommand {
 
-    Class<?> classStorage;
-    String fieldName;
-    Object value;
+  Class<?> classStorage;
+  String fieldName;
+  Object value;
 
-    public SetStaticFieldValue(Class<?> classStorage, String fieldName, Object value) {
-        this.classStorage = classStorage;
-        this.fieldName = fieldName;
-        this.value = value;
-    }
+  public SetStaticFieldValue(Class<?> classStorage, String fieldName, Object value) {
+    this.classStorage = classStorage;
+    this.fieldName = fieldName;
+    this.value = value;
+  }
 
-    @Override
-    public void initialize() {
-        TypeUtils.setStaticField(classStorage, fieldName, value);
-    }
+  @Override
+  public void initialize() {
+    TypeUtils.setStaticField(classStorage, fieldName, value);
+  }
 }

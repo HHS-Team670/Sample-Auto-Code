@@ -6,18 +6,14 @@ import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 
 public class ManipulateAlgae extends SequentialCommandGroup {
-    AlgaeManipulator mAlgaeManipulator = AlgaeManipulator.getInstance();
+  AlgaeManipulator mAlgaeManipulator = AlgaeManipulator.getInstance();
 
-    public ManipulateAlgae(
-            boolean isIntaking, RobotPosition robotPos) {
-        addRequirements(mAlgaeManipulator);
-        if (isIntaking) {
-            addCommands(
-                    new MoveToRobotPosition(robotPos),
-                    new AlgaeManipulatorIntake(isIntaking));
-        } else {
-            addCommands(
-                    new MoveToRobotPosition(robotPos));
-        }
+  public ManipulateAlgae(boolean isIntaking, RobotPosition robotPos) {
+    addRequirements(mAlgaeManipulator);
+    if (isIntaking) {
+      addCommands(new MoveToRobotPosition(robotPos), new AlgaeManipulatorIntake(isIntaking));
+    } else {
+      addCommands(new MoveToRobotPosition(robotPos));
     }
+  }
 }

@@ -5,21 +5,20 @@ import frc.team670.robot.subsystems.Tilter;
 
 public class TilterOffset extends InstantCommand {
 
-    private Tilter mTilter = Tilter.getInstance();
-    private boolean positive;
+  private Tilter mTilter = Tilter.getInstance();
+  private boolean positive;
 
-    public TilterOffset(boolean positive) {
-        addRequirements(mTilter);
-        this.positive = positive;
+  public TilterOffset(boolean positive) {
+    addRequirements(mTilter);
+    this.positive = positive;
+  }
+
+  @Override
+  public void initialize() {
+    if (positive) {
+      mTilter.addOffset(3);
+    } else {
+      mTilter.addOffset(-3);
     }
-
-    @Override
-    public void initialize() {
-        if (positive) {
-            mTilter.addOffset(3);
-        } else {
-            mTilter.addOffset(-3);
-        }
-    }
-
+  }
 }

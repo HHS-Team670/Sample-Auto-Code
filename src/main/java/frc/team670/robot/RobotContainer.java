@@ -18,12 +18,9 @@ import frc.team670.robot.subsystems.Tilter;
 import frc.team670.robot.subsystems.Vision;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -59,30 +56,21 @@ public class RobotContainer {
     return Autos.get("default");
   }
 
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
-  public void autonomousInit() {
-  }
+  public void autonomousInit() {}
 
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
-  public void testInit() {
-  }
+  public void testInit() {}
 
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

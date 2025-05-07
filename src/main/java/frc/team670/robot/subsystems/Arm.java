@@ -1,7 +1,5 @@
 package frc.team670.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
@@ -11,6 +9,7 @@ import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ArmConstants;
 import frc.team670.robot.constants.RobotPosition;
+import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorizedSubsytem {
 
@@ -65,17 +64,15 @@ public class Arm extends MotorizedSubsytem {
                 ArmConstants.kG
                     * Math.cos(
                         Units.degreesToRadians(
-                            360.0
-                                * mMotor.getPosition().getValueAsDouble()
-                                / gearRatio))));
+                            360.0 * mMotor.getPosition().getValueAsDouble() / gearRatio))));
   }
 
   @Override
   public void debugSubsystem() {
     Logger.recordOutput(this.getName() + "/CurrentPositionDegrees", getMotorPositionInDegrees());
-    Logger.recordOutput(this.getName() + "/SetpointDegrees",
-        mSetpoint == kNoSetPoint ? -1
-            : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
+    Logger.recordOutput(
+        this.getName() + "/SetpointDegrees",
+        mSetpoint == kNoSetPoint ? -1 : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
   }
 
   public boolean clearSetpoint() {
@@ -98,5 +95,4 @@ public class Arm extends MotorizedSubsytem {
       moveToTargetPosition(gearRatio);
     }
   }
-
 }

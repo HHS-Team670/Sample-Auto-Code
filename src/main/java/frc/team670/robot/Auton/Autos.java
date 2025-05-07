@@ -5,9 +5,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.team670.libs.Auto.AutoPath;
 import frc.team670.libs.Auto.ChoreoCommand;
+import frc.team670.robot.commands.claw.CoralIntake;
+import frc.team670.robot.commands.claw.StartClawEject;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
 import frc.team670.robot.constants.RobotPosition;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,24 +19,41 @@ public class Autos {
 
   static {
     AutoPath center = new AutoPath("center");
-    center.addCommand(new PrepareShootCoral(RobotPosition.L4));
+    center.addCommands(new PrepareShootCoral(RobotPosition.L4));
 
     AutoPath left = new AutoPath("left");
-
-    left.addCommand(
+    left.addCommands(
         new ParallelCommandGroup(
-            new ChoreoCommand("L, 5L"),
-            new PrepareShootCoral(RobotPosition.L4))
-
-    );
+            new ChoreoCommand("L, 5L"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject(),
+        new ParallelCommandGroup(new ChoreoCommand("5L, SL"), new CoralIntake()),
+        new ParallelCommandGroup(
+            new ChoreoCommand("SL, 5R"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject(),
+        new ParallelCommandGroup(new ChoreoCommand("5R, SL"), new CoralIntake()),
+        new ParallelCommandGroup(
+            new ChoreoCommand("SL, 4L"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject());
 
     AutoPath right = new AutoPath("right");
+    right.addCommands(
+        new ParallelCommandGroup(
+            new ChoreoCommand("R, 3R"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject(),
+        new ParallelCommandGroup(new ChoreoCommand("3R, SR"), new CoralIntake()),
+        new ParallelCommandGroup(
+            new ChoreoCommand("SR, 3L"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject(),
+        new ParallelCommandGroup(new ChoreoCommand("3L, SR"), new CoralIntake()),
+        new ParallelCommandGroup(
+            new ChoreoCommand("SR, 4R"), new PrepareShootCoral(RobotPosition.L4)),
+        new StartClawEject());
 
-    autoChooser.setDefaultOption(null, null);
-
-    autos.forEach((name, path) -> {
-      autoChooser.addOption(name, path);
-    });
+    autoChooser.setDefaultOption("center", center);
+    autos.forEach(
+        (name, path) -> {
+          autoChooser.addOption(name, path);
+        });
   }
 
   public static void addAuto(String name, AutoPath path) {

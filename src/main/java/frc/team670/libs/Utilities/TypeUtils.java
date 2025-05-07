@@ -2,22 +2,16 @@ package frc.team670.libs.Utilities;
 
 public class TypeUtils {
   /**
-   * The function `getStaticField` retrieves the value of a static field from a
-   * given class using
+   * The function `getStaticField` retrieves the value of a static field from a given class using
    * reflection in Java.
    *
-   * @param classStorage The `classStorage` parameter is the Class object that
-   *                     represents the class
-   *                     containing the static field you want to retrieve.
-   * @param name         The `name` parameter in the `getStaticField` method
-   *                     represents the name of the
-   *                     static field that you want to retrieve from the specified
-   *                     class.
-   * @return The method `getStaticField` is returning a static field value of type
-   *         `T` from the
-   *         specified class `classStorage` with the given field name `name`. The
-   *         return type is `T`,
-   *         which means it can be any type specified when calling the method.
+   * @param classStorage The `classStorage` parameter is the Class object that represents the class
+   *     containing the static field you want to retrieve.
+   * @param name The `name` parameter in the `getStaticField` method represents the name of the
+   *     static field that you want to retrieve from the specified class.
+   * @return The method `getStaticField` is returning a static field value of type `T` from the
+   *     specified class `classStorage` with the given field name `name`. The return type is `T`,
+   *     which means it can be any type specified when calling the method.
    */
   @SuppressWarnings("unchecked")
   public static <T> T getStaticField(Class<?> classStorage, String name) {
@@ -50,12 +44,13 @@ public class TypeUtils {
     // Index 0 is getStackTrace, 1 is unimplemented(), 2 is the caller
     if (stackTrace.length > 2) {
       StackTraceElement caller = stackTrace[2];
-      String info = String.format(
-          "Warning: attempted to use unimplemented method at %s.%s(%s:%d)",
-          caller.getClassName(),
-          caller.getMethodName(),
-          caller.getFileName(),
-          caller.getLineNumber());
+      String info =
+          String.format(
+              "Warning: attempted to use unimplemented method at %s.%s(%s:%d)",
+              caller.getClassName(),
+              caller.getMethodName(),
+              caller.getFileName(),
+              caller.getLineNumber());
       ConsoleLogger.consoleWarning(info);
     }
     return null;

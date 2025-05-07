@@ -13,7 +13,6 @@ import frc.team670.libs.subsystems.HealthySubsytem;
 import frc.team670.robot.constants.DrivetrainConstants;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
@@ -52,8 +51,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a
-   * DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
    * class
    *
    * @param constants

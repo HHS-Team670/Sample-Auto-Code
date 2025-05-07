@@ -57,24 +57,16 @@ public class XboxJoysticButtons {
   /**
    * This function must be called before binding any of the buttons
    *
-   * <p>
-   * The function `configureJoysticks` sets up various joystick buttons and
-   * triggers for both a
+   * <p>The function `configureJoysticks` sets up various joystick buttons and triggers for both a
    * driver and an operator Xbox controller.
    *
-   * @param driver   The `driver` parameter in the `configureJoysticks` method is
-   *                 an `XboxController`
-   *                 object representing the controller used by the driver of the
-   *                 robot. This controller is used
-   *                 to set up various joystick buttons, triggers, and D-pad
-   *                 buttons for controlling the robot.
-   * @param operator The `operator` parameter in the `configureJoysticks` method
-   *                 is an
-   *                 XboxController object representing the controller used by the
-   *                 operator of the robot. This
-   *                 controller is used to set up various joystick buttons,
-   *                 triggers, and D-pad buttons for the
-   *                 operator to interact with the robot.
+   * @param driver The `driver` parameter in the `configureJoysticks` method is an `XboxController`
+   *     object representing the controller used by the driver of the robot. This controller is used
+   *     to set up various joystick buttons, triggers, and D-pad buttons for controlling the robot.
+   * @param operator The `operator` parameter in the `configureJoysticks` method is an
+   *     XboxController object representing the controller used by the operator of the robot. This
+   *     controller is used to set up various joystick buttons, triggers, and D-pad buttons for the
+   *     operator to interact with the robot.
    */
   public static void configureJoysticks(XboxController driver, XboxController operator) {
 
@@ -102,10 +94,14 @@ public class XboxJoysticButtons {
     Driver_RightJoystickPress = new JoysticIO(driver, XboxButtons.RIGHT_JOYSTICK_BUTTON);
     Operator_RightJoysticPress = new JoysticIO(operator, XboxButtons.RIGHT_JOYSTICK_BUTTON);
 
-    Driver_LeftTrigger = new JoysticIO(driver.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
-    Driver_RightTrigger = new JoysticIO(driver.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
-    Operator_LeftTrigger = new JoysticIO(operator.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
-    Operator_RightTrigger = new JoysticIO(operator.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Driver_LeftTrigger =
+        new JoysticIO(driver.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Driver_RightTrigger =
+        new JoysticIO(driver.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Operator_LeftTrigger =
+        new JoysticIO(operator.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Operator_RightTrigger =
+        new JoysticIO(operator.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
 
     Driver_Dpad_North = new JoysticIO(driver, 0.0);
     Driver_Dpad_NorthEast = new JoysticIO(driver, 45.0);
@@ -131,17 +127,12 @@ public class XboxJoysticButtons {
   /**
    * This function must be called before binding any of the buttons
    *
-   * <p>
-   * The function `configureJoysticks` sets up various buttons and triggers on an
-   * Xbox controller
+   * <p>The function `configureJoysticks` sets up various buttons and triggers on an Xbox controller
    * for use in a Java program.
    *
-   * @param driver The `driver` parameter in the `configureJoysticks` method is an
-   *               `XboxController`
-   *               object that represents the controller being configured. This
-   *               method sets up various buttons
-   *               and triggers on the Xbox controller for use in controlling the
-   *               robot.
+   * @param driver The `driver` parameter in the `configureJoysticks` method is an `XboxController`
+   *     object that represents the controller being configured. This method sets up various buttons
+   *     and triggers on the Xbox controller for use in controlling the robot.
    */
   public static void configureJoysticks(XboxController driver) {
 
@@ -158,8 +149,10 @@ public class XboxJoysticButtons {
     Driver_LeftJoystickPress = new JoysticIO(driver, XboxButtons.LEFT_JOYSTICK_BUTTON);
     Driver_RightJoystickPress = new JoysticIO(driver, XboxButtons.RIGHT_JOYSTICK_BUTTON);
 
-    Driver_LeftTrigger = new JoysticIO(driver.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
-    Driver_RightTrigger = new JoysticIO(driver.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Driver_LeftTrigger =
+        new JoysticIO(driver.leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    Driver_RightTrigger =
+        new JoysticIO(driver.rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
 
     Driver_Dpad_North = new JoysticIO(driver, 0.0);
     Driver_Dpad_NorthEast = new JoysticIO(driver, 45.0);

@@ -1,7 +1,5 @@
 package frc.team670.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -11,6 +9,7 @@ import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ClawConstants;
 import frc.team670.robot.subsystems.LED.LEDColor;
+import org.littletonrobotics.junction.Logger;
 
 public class Claw extends MotorizedSubsytem {
   private boolean hasCoral = false;
@@ -145,6 +144,5 @@ public class Claw extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {
-  }
+  protected void checkInterference() {}
 }

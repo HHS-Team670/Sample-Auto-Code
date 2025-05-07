@@ -10,42 +10,41 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class JoysticIO {
 
-    Trigger io;
+  Trigger io;
 
-    public JoysticIO(Trigger io) {
-        this.io = io;
-    }
+  public JoysticIO(Trigger io) {
+    this.io = io;
+  }
 
-    public JoysticIO(XboxController controller, int button) {
-        io = new JoystickButton(controller, button);
-    }
+  public JoysticIO(XboxController controller, int button) {
+    io = new JoystickButton(controller, button);
+  }
 
-    public JoysticIO(BooleanEvent event) {
-        io = new Trigger(event);
-    }
+  public JoysticIO(BooleanEvent event) {
+    io = new Trigger(event);
+  }
 
-    public JoysticIO(XboxController controller, double angle) {
-        io = new POVButton(controller, (int) angle);
-    }
+  public JoysticIO(XboxController controller, double angle) {
+    io = new POVButton(controller, (int) angle);
+  }
 
-    public JoysticIO onTrue(Command command) {
-        io.onTrue(command);
-        return this;
-    }
+  public JoysticIO onTrue(Command command) {
+    io.onTrue(command);
+    return this;
+  }
 
-    public JoysticIO onTrue(Runnable command) {
-        io.onTrue(new InstantCommand(command));
-        return this;
-    }
+  public JoysticIO onTrue(Runnable command) {
+    io.onTrue(new InstantCommand(command));
+    return this;
+  }
 
-    public JoysticIO onFalse(Command command) {
-        io.onFalse(command);
-        return this;
-    }
+  public JoysticIO onFalse(Command command) {
+    io.onFalse(command);
+    return this;
+  }
 
-    public JoysticIO onFalse(Runnable command) {
-        io.onFalse(new InstantCommand(command));
-        return this;
-    }
-
+  public JoysticIO onFalse(Runnable command) {
+    io.onFalse(new InstantCommand(command));
+    return this;
+  }
 }

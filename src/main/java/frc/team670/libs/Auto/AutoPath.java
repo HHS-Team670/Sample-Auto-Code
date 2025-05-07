@@ -3,12 +3,11 @@ package frc.team670.libs.Auto;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.robot.Auton.Autos;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class AutoPath {
-  private List<Command> commands = new ArrayList<>();
+  private List<Command> allCommands = new ArrayList<>();
   private String name;
 
   public AutoPath(String name) {
@@ -17,16 +16,16 @@ public class AutoPath {
   }
 
   public Command compileAuto() {
-    Command current = commands.get(0);
-    for (int i = 1; i < commands.size(); i++) {
-      current = current.andThen(commands.get(i));
+    Command current = allCommands.get(0);
+    for (int i = 1; i < allCommands.size(); i++) {
+      current = current.andThen(allCommands.get(i));
     }
     return current;
   }
 
-  public void addCommand(Command... additon) {
-    for (Command c : additon) {
-      commands.add(c);
+  public void addCommands(Command... commands) {
+    for (Command c : commands) {
+      allCommands.add(c);
     }
   }
 
