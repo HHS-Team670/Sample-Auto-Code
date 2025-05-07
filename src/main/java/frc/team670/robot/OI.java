@@ -8,8 +8,24 @@ package frc.team670.robot;
 import static frc.team670.libs.IO.XboxJoysticButtons.*;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.team670.libs.UtilityCommands.ButtonCommand;
+import frc.team670.robot.commands.Idle;
+import frc.team670.robot.commands.Park;
+import frc.team670.robot.commands.AlgaeManipulator.AlgaeManipulatorIntake;
+import frc.team670.robot.commands.AlgaeManipulator.ManipulateAlgae;
+import frc.team670.robot.commands.OI.SetCameraSide;
+import frc.team670.robot.commands.OI.SetCoralMode;
+import frc.team670.robot.commands.claw.CoralIntake;
+import frc.team670.robot.commands.claw.StartClawEject;
+import frc.team670.robot.commands.climb.SetClimbState;
+import frc.team670.robot.commands.tilter.TilterOffset;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
+import frc.team670.robot.commands.vision.PrepareShootCoral;
+import frc.team670.robot.constants.RobotPosition;
+import frc.team670.robot.subsystems.Elevator;
+import frc.team670.robot.subsystems.Climb.ClimbState;
 
 public class OI {
 
@@ -18,10 +34,71 @@ public class OI {
 
   public static Alliance alliance;
   public static CAMERA_SIDE cameraSide;
+  public static boolean coralModeOn;
 
-  public static void configureDriverControls() {}
+  public static Boolean isCoralModeOn() {
+    return coralModeOn;
+  }
 
-  public static void configureOperatorControls() {}
+  public static void configureDriverControls() {
+    Driver_RightBumper
+        .onTrue(
+            new ButtonCommand(
+                new CoralIntake(),
+                new AlgaeManipulatorIntake(true),
+                OI::isCoralModeOn));
+    Driver_LeftBumper
+        .onTrue(
+            new ButtonCommand(
+                new StartClawEject(),
+                new AlgaeManipulatorIntake(false),
+                OI::isCoralModeOn));
+    Driver_ButtonA.onTrue(
+        new ButtonCommand(
+            new PrepareShootCoral(RobotPosition.L1),
+            new ManipulateAlgae(false, RobotPosition.PROCESSOR),
+            OI::isCoralModeOn));
+    Driver_ButtonX.onTrue(
+        new ButtonCommand(
+            new PrepareShootCoral(RobotPosition.L2),
+            new ManipulateAlgae(false, RobotPosition.ALGAE23),
+            OI::isCoralModeOn));
+    Driver_ButtonB.onTrue(
+        new ButtonCommand(
+            new PrepareShootCoral(RobotPosition.L3),
+            new ManipulateAlgae(false, RobotPosition.ALGAE34),
+            OI::isCoralModeOn));
+    Driver_ButtonY.onTrue(
+        new ButtonCommand(
+            new PrepareShootCoral(RobotPosition.L4),
+            new ManipulateAlgae(false, RobotPosition.BARGE),
+            OI::isCoralModeOn));
+
+    Driver_LeftTrigger.onTrue(new SetCameraSide(CAMERA_SIDE.LEFT));
+    Driver_LeftTrigger.onTrue(new SetCameraSide(CAMERA_SIDE.RIGHT));
+
+    Driver_Dpad_North.onTrue(new SetClimbState(ClimbState.CLIMB));
+    Driver_Dpad_South.onTrue(new SetClimbState(ClimbState.STOW));
+
+    Driver_Dpad_NorthWest.onTrue(new SetCoralMode(false));
+    Driver_Dpad_West.onTrue(new SetCoralMode(false));
+    Driver_Dpad_SouthWest.onTrue(new SetCoralMode(false));
+
+    Driver_Dpad_NorthEast.onTrue(new SetCoralMode(true));
+    Driver_Dpad_East.onTrue(new SetCoralMode(true));
+    Driver_Dpad_SouthEast.onTrue(new SetCoralMode(true));
+
+    Driver_ButtonBack.onTrue(new Park());
+  }
+
+  public static void configureOperatorControls() {
+    Operator_ButtonY.onTrue(new TilterOffset(true));
+    Operator_ButtonA.onTrue(new TilterOffset(false));
+    Operator_ButtonX.onTrue(new InstantCommand(() -> {
+      Elevator.hasOverridedLimitSwitches = true;
+    }, Elevator.getInstance()));
+    Operator_ButtonBack.onTrue(new Idle());
+  }
 
   public static void configureBindings() {
     // this line must be before anything else
