@@ -6,6 +6,8 @@ import frc.team670.libs.Utilities.ConsoleLogger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 public class HealthChecker {
 
   public static Map<Subsystem, Health> healthStates = new HashMap<>();
@@ -31,6 +33,7 @@ public class HealthChecker {
         (Subsystem s, Health h) -> {
           if (h == Health.RED) {
             CommandScheduler.getInstance().unregisterSubsystem(s);
+            Logger.recordOutput(s.getName() + "/Health", h);
           }
         });
   }

@@ -1,5 +1,7 @@
 package frc.team670.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -13,64 +15,71 @@ import frc.team670.robot.constants.RobotPosition;
 
 public class Climb extends MotorizedSubsytem {
 
-  private static Climb mInstance;
-  private TalonFX motor;
-  private TalonFXConfiguration upConfig;
-  private TalonFXConfiguration downConfig;
+    private static Climb mInstance = new Climb();
+    private TalonFX motor;
+    private TalonFXConfiguration upConfig;
+    private TalonFXConfiguration downConfig;
 
-  public enum ClimbState {
-    STOW(39),
-    CLIMB(150),
-    REST(0);
+    private ClimbState climbState = ClimbState.STOW;
 
-    private double position;
+    public enum ClimbState {
+        STOW(39),
+        CLIMB(150),
+        REST(0);
 
-    private ClimbState(double position) {
-      this.position = MustangMath.getDegreesFromRotations(position, ClimbConstants.GEAR_RATIO);
+        private double position;
+
+        private ClimbState(double position) {
+            this.position = MustangMath.getDegreesFromRotations(position, ClimbConstants.GEAR_RATIO);
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
-    public double getPosition() {
-      return this.position;
+    public static Climb getInstance() {
+        return mInstance;
     }
-  }
 
-  public static synchronized Climb getInstance() {
-    mInstance = mInstance == null ? new Climb() : mInstance;
-    return mInstance;
-  }
+    public Climb() {
+        motor = TalonFXUtils.construct(ClimbConstants.MOTOR_ID, ClimbConstants.upConfig);
+        registerMotors(motor);
+        motor.setPosition(0);
 
-  public Climb() {
-    motor = TalonFXUtils.construct(ClimbConstants.MOTOR_ID, ClimbConstants.upConfig);
-    registerMotors(motor);
-    motor.setPosition(0);
-
-    setGearRatio(ClimbConstants.GEAR_RATIO);
-  }
-
-  public void setClimbMode(ClimbState newState) {
-    if (newState == ClimbState.CLIMB || newState == ClimbState.REST) {
-      TalonFXUtils.applyConfig(motor, downConfig);
-    } else {
-      TalonFXUtils.applyConfig(motor, upConfig);
+        setGearRatio(ClimbConstants.GEAR_RATIO);
     }
-    moveClimb(newState);
-  }
 
-  private void moveClimb(ClimbState climbState) {
-    motor.setControl(new MotionMagicVoltage(climbState.getPosition()).withSlot(0));
-    if (climbState == ClimbState.CLIMB) {
-      new MoveToRobotPosition(RobotPosition.STOW).schedule();
+    public void setClimbMode(ClimbState newState) {
+        this.climbState = newState;
+
+        if (newState == ClimbState.CLIMB || newState == ClimbState.REST) {
+            TalonFXUtils.applyConfig(motor, downConfig);
+        } else {
+            TalonFXUtils.applyConfig(motor, upConfig);
+        }
+        moveClimb(newState);
     }
-  }
 
-  @Override
-  public Health checkHealth() {
-    return Health.GREEN;
-  }
+    private void moveClimb(ClimbState climbState) {
+        motor.setControl(new MotionMagicVoltage(climbState.getPosition()).withSlot(0));
+        if (climbState == ClimbState.CLIMB) {
+            new MoveToRobotPosition(RobotPosition.STOW).schedule();
+        }
+    }
 
-  @Override
-  public void debugSubsystem() {}
+    @Override
+    public Health checkHealth() {
+        return Health.GREEN;
+    }
 
-  @Override
-  protected void checkInterference() {}
+    @Override
+    public void debugSubsystem() {
+        Logger.recordOutput(this.getName() + "/mode",
+                climbState);
+    }
+
+    @Override
+    protected void checkInterference() {
+    }
 }

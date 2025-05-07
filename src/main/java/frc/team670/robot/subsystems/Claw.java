@@ -1,5 +1,7 @@
 package frc.team670.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -34,6 +36,8 @@ public class Claw extends MotorizedSubsytem {
   private LED led = LED.getInstance();
 
   private static Claw mInstance = new Claw();
+
+  private double motorSpeed = 0;
 
   public static Claw getInstance() {
     return mInstance;
@@ -76,15 +80,18 @@ public class Claw extends MotorizedSubsytem {
     encoderDebouncer = new Debouncer(0.5);
     encoderDebouncerAuto = new Debouncer(0.3);
     mMotor.set(intakingSpeed);
+    motorSpeed = intakingSpeed;
   }
 
   private void eject() {
     mMotor.set(ejectingSpeed);
     hasCoral = false;
+    motorSpeed = ejectingSpeed;
   }
 
   private void idle() {
     mMotor.set(idleSpeed);
+    motorSpeed = idleSpeed;
   }
 
   /** Checking for hardware breaks with the mMotor */
@@ -120,6 +127,7 @@ public class Claw extends MotorizedSubsytem {
           m_timer.stop();
           m_timer.reset();
           mMotor.set(0);
+          motorSpeed = 0;
           if (DriverStation.isTeleopEnabled()) {
             led.solidhsv(LEDColor.YELLOW);
           }
@@ -132,8 +140,11 @@ public class Claw extends MotorizedSubsytem {
   }
 
   @Override
-  public void debugSubsystem() {}
+  public void debugSubsystem() {
+    Logger.recordOutput(this.getName() + "/CurrentSpeed", motorSpeed);
+  }
 
   @Override
-  protected void checkInterference() {}
+  protected void checkInterference() {
+  }
 }

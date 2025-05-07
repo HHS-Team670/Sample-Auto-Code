@@ -17,4 +17,13 @@ public class MustangMath {
   public static boolean doublesEqual(double double1, double double2, double errorMargin) {
     return Math.abs(double1 - double2) <= errorMargin;
   }
+
+  public static double getMetersFromRotations(double circumferenceSprocket, double gearRatio, double rotations) {
+    return (rotations / gearRatio) * circumferenceSprocket;
+  }
+
+  public static double getRotationsFromMeters(double circumferenceSprocket, double gearRatio, double meters) {
+    return (meters / circumferenceSprocket) * gearRatio;
+  }
+
 }
