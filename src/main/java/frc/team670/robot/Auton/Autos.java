@@ -7,6 +7,7 @@ import frc.team670.libs.Auto.AutoPath;
 import frc.team670.libs.Auto.ChoreoCommand;
 import frc.team670.robot.commands.claw.CoralIntake;
 import frc.team670.robot.commands.claw.StartClawEject;
+import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
 import frc.team670.robot.constants.RobotPosition;
 import java.util.HashMap;
@@ -19,34 +20,37 @@ public class Autos {
 
   static {
     AutoPath center = new AutoPath("center");
-    center.addCommands(new PrepareShootCoral(RobotPosition.L4));
+    center.addCommands(
+        new ChoreoCommand("C, 1R"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.RIGHT),
+        new StartClawEject());
 
     AutoPath left = new AutoPath("left");
     left.addCommands(
-        new ParallelCommandGroup(
-            new ChoreoCommand("L, 5L"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("L, 5L"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.LEFT),
         new StartClawEject(),
         new ParallelCommandGroup(new ChoreoCommand("5L, SL"), new CoralIntake()),
-        new ParallelCommandGroup(
-            new ChoreoCommand("SL, 5R"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("SL, 5R"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.RIGHT),
         new StartClawEject(),
         new ParallelCommandGroup(new ChoreoCommand("5R, SL"), new CoralIntake()),
-        new ParallelCommandGroup(
-            new ChoreoCommand("SL, 4L"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("SL, 4L"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.LEFT),
         new StartClawEject());
 
     AutoPath right = new AutoPath("right");
     right.addCommands(
-        new ParallelCommandGroup(
-            new ChoreoCommand("R, 3R"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("R, 3R"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.RIGHT),
         new StartClawEject(),
         new ParallelCommandGroup(new ChoreoCommand("3R, SR"), new CoralIntake()),
-        new ParallelCommandGroup(
-            new ChoreoCommand("SR, 3L"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("SR, 3L"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.LEFT),
         new StartClawEject(),
         new ParallelCommandGroup(new ChoreoCommand("3L, SR"), new CoralIntake()),
-        new ParallelCommandGroup(
-            new ChoreoCommand("SR, 4R"), new PrepareShootCoral(RobotPosition.L4)),
+        new ChoreoCommand("SR, 4R"),
+        new PrepareShootCoral(RobotPosition.L4, CAMERA_SIDE.RIGHT),
         new StartClawEject());
 
     autoChooser.setDefaultOption("center", center);
