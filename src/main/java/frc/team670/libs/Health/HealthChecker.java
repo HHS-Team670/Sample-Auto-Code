@@ -33,8 +33,8 @@ public class HealthChecker {
         (Subsystem s, Health h) -> {
           if (h == Health.RED) {
             CommandScheduler.getInstance().unregisterSubsystem(s);
-            Logger.recordOutput(s.getName() + "/Health", h);
           }
+          Logger.recordOutput(s.getName() + "/Health", h);
         });
   }
 }

@@ -55,11 +55,6 @@ public class Tilter extends MotorizedSubsytem {
                         : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
     }
 
-    @Override
-    public void periodic() {
-        checkInterference();
-    }
-
     public void addOffset(double change) {
         offset += change;
         mSetpoint += MustangMath.getRotationsFromDegrees(gearRatio, change);
