@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
 import frc.team670.robot.subsystems.Drivetrain;
@@ -24,6 +26,8 @@ public class AlignToClosestAprilTag extends Command {
   public static PhotonTrackedTarget aprilTag;
   private Vision mVision;
   String cameraName;
+
+  private Timer timer = new Timer();
 
   SwerveRequest.RobotCentric drive;
   private Drivetrain mDrivetrain;
@@ -58,12 +62,13 @@ public class AlignToClosestAprilTag extends Command {
     this.mVision = Vision.getInstance();
     addRequirements(mVision, mDrivetrain);
 
-    this.drive =
-        new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    this.drive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   }
 
   @Override
   public void initialize() {
+    timer.start();
+
     mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
 
     if (OI.cameraSide == CAMERA_SIDE.LEFT) {
@@ -107,15 +112,13 @@ public class AlignToClosestAprilTag extends Command {
       }
     } else if (hasFoundAprilTag) {
       try {
-        Pose2d lastAprilTag =
-            cameraName == "ArducamL"
-                ? mVision.lastSeenAprilTagLeftCam
-                : mVision.lastSeenAprilTagRightCam;
+        Pose2d lastAprilTag = cameraName == "ArducamL"
+            ? mVision.lastSeenAprilTagLeftCam
+            : mVision.lastSeenAprilTagRightCam;
 
-        Pose2d lastRobotCentriChange =
-            cameraName == "ArducamL"
-                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
+        Pose2d lastRobotCentriChange = cameraName == "ArducamL"
+            ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+            : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
         double xChange = lastRobotCentriChange.getX();
         double yChange = lastRobotCentriChange.getY();
@@ -153,6 +156,10 @@ public class AlignToClosestAprilTag extends Command {
       return true;
     }
 
+    if (DriverStation.isAutonomousEnabled() && timer.hasElapsed(3)) {
+      return true;
+    }
+
     return (Math.abs(yDist) < 0.02) && (Math.abs(xDist) < 0.08) && hasFoundAprilTag;
   }
 
@@ -163,5 +170,8 @@ public class AlignToClosestAprilTag extends Command {
     yValue = 0;
     rotationValue = 0;
     AligningToAprilTag = false;
+
+    timer.stop();
+    timer.reset();
   }
 }
