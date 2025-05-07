@@ -53,7 +53,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.get("default");
+    return Autos.getSelected();
   }
 
   public void robotPeriodic() {}
