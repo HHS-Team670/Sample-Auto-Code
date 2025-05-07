@@ -23,7 +23,9 @@ import frc.team670.robot.commands.climb.SetClimbState;
 import frc.team670.robot.commands.tilter.TilterOffset;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
+import frc.team670.robot.constants.DrivetrainConstants;
 import frc.team670.robot.constants.RobotPosition;
+import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Elevator;
 import frc.team670.robot.subsystems.Climb.ClimbState;
 
@@ -35,6 +37,8 @@ public class OI {
   public static Alliance alliance;
   public static CAMERA_SIDE cameraSide;
   public static boolean coralModeOn;
+
+  static Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   public static Boolean isCoralModeOn() {
     return coralModeOn;
@@ -89,14 +93,15 @@ public class OI {
     Driver_Dpad_SouthEast.onTrue(new SetCoralMode(true));
 
     Driver_ButtonBack.onTrue(new Park());
+
+    Driver_ButtonStart.onTrue(() -> mDrivetrain.seedFieldCentric());
+
   }
 
   public static void configureOperatorControls() {
     Operator_ButtonY.onTrue(new TilterOffset(true));
     Operator_ButtonA.onTrue(new TilterOffset(false));
-    Operator_ButtonX.onTrue(new InstantCommand(() -> {
-      Elevator.hasOverridedLimitSwitches = true;
-    }, Elevator.getInstance()));
+    Operator_ButtonX.onTrue(() -> Elevator.hasOverridedLimitSwitches = true);
     Operator_ButtonBack.onTrue(new Idle());
   }
 
@@ -111,6 +116,26 @@ public class OI {
     // operator controls
 
     configureOperatorControls();
+
+    // drivetrain config
+
+    mDrivetrain.setDefaultCommand(new InstantCommand(
+        () -> mDrivetrain.setControl(
+            DrivetrainConstants.drive
+                .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
+                // Drive
+                // forward
+                // with
+                // negative Y (forward)
+                .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
+                // Drive
+                // left
+                // with
+                // negative
+                // X
+                // (left)
+                .withRotationalRate(-driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate))));
+
   }
 
   public static XboxController getOperatorController() {

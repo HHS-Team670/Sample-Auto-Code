@@ -43,4 +43,21 @@ public class TypeUtils {
       e.printStackTrace();
     }
   }
+
+  public static <T> T unimplemented() {
+    StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+    // Index 0 is getStackTrace, 1 is unimplemented(), 2 is the caller
+    if (stackTrace.length > 2) {
+      StackTraceElement caller = stackTrace[2];
+      String info = String.format(
+          "Warning: attempted to use unimplemented method at %s.%s(%s:%d)",
+          caller.getClassName(),
+          caller.getMethodName(),
+          caller.getFileName(),
+          caller.getLineNumber());
+      ConsoleLogger.consoleWarning(info);
+    }
+    return null;
+  }
 }
