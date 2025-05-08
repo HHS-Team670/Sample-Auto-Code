@@ -5,13 +5,20 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Health.HealthChecker;
+import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
+import frc.team670.robot.Robot;
 import frc.team670.robot.constants.DrivetrainConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +27,8 @@ import org.littletonrobotics.junction.Logger;
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     implements Subsystem, HealthySubsytem, DebugSubsytem {
   public static Drivetrain mInstance = new Drivetrain();
+
+  public List<SimTalonFX> motorSims = new ArrayList<>();
 
   public static Drivetrain getInstance() {
     return mInstance;
@@ -35,12 +44,50 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         DrivetrainConstants.FrontRight,
         DrivetrainConstants.BackLeft,
         DrivetrainConstants.BackRight);
+
+    for (TalonFX m : getMotors()) {
+      motorSims.add(new SimTalonFX(m, TalonFXUtils.getConfig(m).MotionMagic.MotionMagicCruiseVelocity,
+          TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration));
+    }
   }
 
   @Override
   public void setControl(SwerveRequest request) {
+    if (Robot.isSimulation() & request instanceof ApplyRobotSpeeds) {
+      ApplyRobotSpeeds reqSpeeds = (ApplyRobotSpeeds) request;
+      ChassisSpeeds speeds = reqSpeeds.Speeds;
+      SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
+          new Translation2d(
+              DrivetrainConstants.kTrackWidthMeters / 2.0,
+              DrivetrainConstants.kWheelBaseMeters / 2.0),
+          new Translation2d(
+              DrivetrainConstants.kTrackWidthMeters / 2.0,
+              -DrivetrainConstants.kWheelBaseMeters / 2.0),
+          new Translation2d(
+              -DrivetrainConstants.kTrackWidthMeters / 2.0,
+              DrivetrainConstants.kWheelBaseMeters / 2.0),
+          new Translation2d(
+              -DrivetrainConstants.kTrackWidthMeters / 2.0,
+              -DrivetrainConstants.kWheelBaseMeters / 2.0));
 
+      SwerveModuleState[] moduleStates = kKinematics.toSwerveModuleStates(speeds);
+      for (int i = 0; i < moduleStates.length; i++) {
+        setSingleSimModuleState(moduleStates[i], i);
+      }
+      SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DrivetrainConstants.MaxSpeed);
+    }
     super.setControl(request);
+  }
+
+  public void setSingleSimModuleState(SwerveModuleState state, int index) {
+    state.optimize(state.angle);
+
+    SimTalonFX driveSim = motorSims.get(index * 2);
+    SimTalonFX steerSim = motorSims.get(index * 2 + 1);
+
+    driveSim.setTargetPosition(metersToMotorRotations(state.speedMetersPerSecond));
+    steerSim.setTargetPosition(
+        MustangMath.getRotationsFromDegrees(DrivetrainConstants.kSteerGearRatio, state.angle.getDegrees()));
   }
 
   public List<TalonFX> getMotors() {
@@ -51,6 +98,11 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
       motors.add(m.getSteerMotor());
     }
     return motors;
+  }
+
+  public double metersToMotorRotations(double meters) {
+    double wheelDegrees = meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
+    return MustangMath.getRotationsFromDegrees(DrivetrainConstants.kDriveGearRatio, wheelDegrees);
   }
 
   @Override

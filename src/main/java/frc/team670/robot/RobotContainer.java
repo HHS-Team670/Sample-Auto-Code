@@ -6,10 +6,6 @@ package frc.team670.robot;
 
 import java.util.List;
 
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -19,6 +15,7 @@ import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.simulation.SimulatedSubsytem;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
+import frc.team670.robot.Auton.Autos;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Claw;
@@ -66,6 +63,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    Autos.configureAutoBuilder();
     return new ChoreoCommand("C, 1R");
   }
 
@@ -92,28 +90,25 @@ public class RobotContainer {
 
   public Timer timer = new Timer();
 
-  TalonFX test = new TalonFX(0);
-  SimTalonFX sim = new SimTalonFX(test, 500, 1000);
-
   public void simulationInit() {
     timer.start();
 
     List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
-
     for (Subsystem sub : allSubsystems) {
       if (sub instanceof MotorizedSubsytem) {
         MotorizedSubsytem mSub = (MotorizedSubsytem) sub;
         mSub.Sim = new SimulatedSubsytem(mSub);
       }
     }
-
-    sim.setTargetPosition(5);
-
   }
 
   public void simulationPeriodic() {
-    sim.update(timer.get());
-    Logger.recordOutput("Simulation/simedVal", sim.getSimPosition());
+    if (SimTalonFX.simMotors != null) {
+      for (SimTalonFX sim : SimTalonFX.simMotors) {
+        sim.update(timer.get());
+      }
+    }
+
     timer.restart();
   }
 }
