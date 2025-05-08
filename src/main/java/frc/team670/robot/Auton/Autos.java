@@ -17,6 +17,8 @@ import frc.team670.robot.subsystems.Drivetrain;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -88,11 +90,14 @@ public class Autos {
           mDrivetrain::resetPose, // Consumer for seeding pose against auto
           () -> mDrivetrain.getState().Speeds, // Supplier of current robot speeds
           // Consumer of ChassisSpeeds and feedforwards to drive the robot
-          (speeds, feedforwards) -> mDrivetrain.setControl(
-              new SwerveRequest.ApplyRobotSpeeds()
-                  .withSpeeds(speeds)
-                  .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                  .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+          (speeds, feedforwards) -> {
+            mDrivetrain.setControl(
+                new SwerveRequest.ApplyRobotSpeeds()
+                    .withSpeeds(speeds)
+                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons()));
+            Logger.recordOutput("Simulation/called", true);
+          },
           new PPHolonomicDriveController(
               // PID constants for translation
               new PIDConstants(10, 0, 0),

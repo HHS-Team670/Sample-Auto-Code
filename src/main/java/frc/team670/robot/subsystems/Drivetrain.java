@@ -51,9 +51,13 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     }
   }
 
+  int count = 0;
+
   @Override
   public void setControl(SwerveRequest request) {
     if (Robot.isSimulation() & request instanceof ApplyRobotSpeeds) {
+      count++;
+      Logger.recordOutput("Simulation/controlCount", count);
       ApplyRobotSpeeds reqSpeeds = (ApplyRobotSpeeds) request;
       ChassisSpeeds speeds = reqSpeeds.Speeds;
       SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
@@ -75,8 +79,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         setSingleSimModuleState(moduleStates[i], i);
       }
       SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DrivetrainConstants.MaxSpeed);
+    } else {
+      super.setControl(request);
+
     }
-    super.setControl(request);
   }
 
   public void setSingleSimModuleState(SwerveModuleState state, int index) {
@@ -85,7 +91,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     SimTalonFX driveSim = motorSims.get(index * 2);
     SimTalonFX steerSim = motorSims.get(index * 2 + 1);
 
-    driveSim.setTargetPosition(metersToMotorRotations(state.speedMetersPerSecond));
+    driveSim.setSpeed(metersToMotorRotations(state.speedMetersPerSecond));
     steerSim.setTargetPosition(
         MustangMath.getRotationsFromDegrees(DrivetrainConstants.kSteerGearRatio, state.angle.getDegrees()));
   }

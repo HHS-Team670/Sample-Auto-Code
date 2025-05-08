@@ -6,6 +6,8 @@ package frc.team670.robot;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -38,13 +40,7 @@ public class RobotContainer {
   public RobotContainer() {
     OI.configureBindings();
     registerSubsytems(
-        Drivetrain.getInstance(),
-        Vision.getInstance(),
-        Arm.getInstance(),
-        Claw.getInstance(),
-        Tilter.getInstance(),
-        Elevator.getInstance(),
-        AlgaeManipulator.getInstance());
+        Drivetrain.getInstance());
   }
 
   /** This is to be used within the {@link Robot} class to register subsytems */
@@ -96,16 +92,18 @@ public class RobotContainer {
     List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
     for (Subsystem sub : allSubsystems) {
       if (sub instanceof MotorizedSubsytem) {
-        MotorizedSubsytem mSub = (MotorizedSubsytem) sub;
-        mSub.Sim = new SimulatedSubsytem(mSub);
+
       }
     }
   }
 
   public void simulationPeriodic() {
     if (SimTalonFX.simMotors != null) {
+      int index = 0;
       for (SimTalonFX sim : SimTalonFX.simMotors) {
         sim.update(timer.get());
+        Logger.recordOutput("Simulation/motor" + index, sim.getSimPosition());
+        index++;
       }
     }
 

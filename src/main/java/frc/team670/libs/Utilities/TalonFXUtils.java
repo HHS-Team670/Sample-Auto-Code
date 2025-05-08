@@ -116,9 +116,10 @@ public class TalonFXUtils {
    */
   public static TalonFX construct(int motorID, TalonFXConfiguration config) {
     TalonFX motor = new TalonFX(motorID);
-    SimTalonFX sim = new SimTalonFX(motor, config.MotionMagic.MotionMagicCruiseVelocity,
-        config.MotionMagic.MotionMagicAcceleration);
-    simMotors.put(motor, sim);
+    // SimTalonFX sim = new SimTalonFX(motor,
+    // config.MotionMagic.MotionMagicCruiseVelocity,
+    // config.MotionMagic.MotionMagicAcceleration);
+    // simMotors.put(motor, sim);
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 30; ++i) {
       status = motor.getConfigurator().apply(config);

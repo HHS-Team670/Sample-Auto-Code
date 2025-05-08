@@ -92,7 +92,7 @@ public class Arm extends MotorizedSubsytem {
       }
     } else if ((mSetpoint != kNoSetPoint) && Elevator.getInstance().hasReachedTargetPosition()) {
       // Continue moving assuming there is a setpoint
-      moveToTargetPosition(gearRatio);
+      moveToTargetPosition(mSetpoint);
     }
   }
 }

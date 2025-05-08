@@ -1,5 +1,7 @@
 package frc.team670.libs.Auto;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -13,6 +15,8 @@ public class ChoreoCommand extends CopyCommand {
   public PathPlannerPath path;
   public Drivetrain drivetrain = Drivetrain.getInstance();
   Pose2d initialPose2d;
+
+  static int count = 0;
 
   public ChoreoCommand(String path) {
 
@@ -35,6 +39,8 @@ public class ChoreoCommand extends CopyCommand {
   @Override
   public void initialize() {
     drivetrain.resetPose(initialPose2d);
+    count++;
+    Logger.recordOutput("Simlation/count", count);
     super.initialize();
   }
 }
