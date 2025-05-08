@@ -29,8 +29,8 @@ public class AlignToClosestAprilTag extends Command {
 
   private Timer timer = new Timer();
 
-  SwerveRequest.RobotCentric drive =
-      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   private double xDist = 0;
@@ -46,6 +46,8 @@ public class AlignToClosestAprilTag extends Command {
   private double metersBack;
 
   private CAMERA_SIDE cameraSide = null;
+
+  public static int simTag;
 
   // Adjust these modifiers as needed
   private static final double xSpeedModifier = 1;
@@ -118,15 +120,13 @@ public class AlignToClosestAprilTag extends Command {
       }
     } else if (hasFoundAprilTag) {
       try {
-        Pose2d lastAprilTag =
-            cameraName == "ArducamL"
-                ? mVision.lastSeenAprilTagLeftCam
-                : mVision.lastSeenAprilTagRightCam;
+        Pose2d lastAprilTag = cameraName == "ArducamL"
+            ? mVision.lastSeenAprilTagLeftCam
+            : mVision.lastSeenAprilTagRightCam;
 
-        Pose2d lastRobotCentriChange =
-            cameraName == "ArducamL"
-                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
+        Pose2d lastRobotCentriChange = cameraName == "ArducamL"
+            ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+            : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
         double xChange = lastRobotCentriChange.getX();
         double yChange = lastRobotCentriChange.getY();
