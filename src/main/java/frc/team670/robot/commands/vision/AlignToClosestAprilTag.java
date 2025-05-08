@@ -3,6 +3,7 @@ package frc.team670.robot.commands.vision;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
+import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -105,7 +107,11 @@ public class AlignToClosestAprilTag extends Command {
 
     if (aprilTag != null) {
       hasFoundAprilTag = true;
-      Transform3d target = aprilTag.getBestCameraToTarget();
+      Transform3d normalTag = aprilTag.getBestCameraToTarget();
+      Pose3d target = new Pose3d(normalTag.getX(), normalTag.getY(), normalTag.getZ(), normalTag.getRotation());
+      if (Robot.isSimulation()) {
+        target = mVision.getClosestSimTarget(cameraSide);
+      }
 
       xDist = target.getX() - metersBack - xOffset;
       if (xDist < 0) {

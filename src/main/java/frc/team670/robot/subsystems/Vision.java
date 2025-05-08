@@ -20,6 +20,7 @@ import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
 import frc.team670.robot.OI;
+import frc.team670.robot.Robot;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.constants.AprilTagConstants;
@@ -188,12 +189,30 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
       lastRobotPoseLeftCam = currentPose;
       robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
+    } else if (Robot.isSimulation()) {
+      Pose3d bestCamToTarget = getClosestSimTarget(OI.cameraSide);
+      lastSeenAprilTagLeftCam = new Pose2d(
+          bestCamToTarget.getX(),
+          bestCamToTarget.getY(),
+          bestCamToTarget.getRotation().toRotation2d());
+
+      lastRobotPoseLeftCam = currentPose;
+      robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
     } else {
       robotCentricChangeSinceSeenLeftCamAprilTag = getRobotCentricChange(true);
     }
 
     if (rightCamAprilTag != null) {
       Transform3d bestCamToTarget = rightCamAprilTag.getBestCameraToTarget();
+      lastSeenAprilTagRightCam = new Pose2d(
+          bestCamToTarget.getX(),
+          bestCamToTarget.getY(),
+          bestCamToTarget.getRotation().toRotation2d());
+
+      lastRobotPoseRightCam = currentPose;
+      robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
+    } else if (Robot.isSimulation()) {
+      Pose3d bestCamToTarget = getClosestSimTarget(OI.cameraSide);
       lastSeenAprilTagRightCam = new Pose2d(
           bestCamToTarget.getX(),
           bestCamToTarget.getY(),
