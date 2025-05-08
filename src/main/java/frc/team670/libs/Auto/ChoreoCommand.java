@@ -18,17 +18,16 @@ public class ChoreoCommand extends CopyCommand {
 
     try {
       this.path = PathPlannerPath.fromChoreoTrajectory(path);
-      ;
-      PathPlannerTrajectory traj =
-          this.path.generateTrajectory(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().RawHeading,
-              RobotConfig.fromGUISettings());
+      PathPlannerTrajectory traj = this.path.generateTrajectory(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().RawHeading,
+          RobotConfig.fromGUISettings());
       initialPose2d = traj.getInitialPose();
       command = AutoBuilder.followPath(this.path);
       setCommand(command);
     } catch (Exception e) {
       e.printStackTrace();
+      throw new Error("Failed to make choreo Path");
     }
     addRequirements(drivetrain);
   }

@@ -36,7 +36,7 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
   public int[] allowedAprilTags = null;
 
-  private static Drivetrain mDrivetrain;
+  private static Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   public Pose2d lastSeenAprilTagLeftCam = new Pose2d(0, 0, new Rotation2d());
   public Pose2d lastSeenAprilTagRightCam = new Pose2d(0, 0, new Rotation2d());
@@ -85,9 +85,8 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
             for (var target : targets) {
               for (int aprilTagNumber : allowedAprilTags) {
                 if (target.getFiducialId() == aprilTagNumber) {
-                  double angle =
-                      Math.abs(
-                          target.getBestCameraToTarget().getRotation().toRotation2d().getDegrees());
+                  double angle = Math.abs(
+                      target.getBestCameraToTarget().getRotation().toRotation2d().getDegrees());
                   if (angle < 160) {
                     continue;
                   }
@@ -108,34 +107,31 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
   }
 
   private void saveTranslationToLastAprilTagDetected() {
-    leftCamAprilTag =
-        getAprilTag(
-            mCameras,
-            "ArducamL",
-            this.allowedAprilTags == null
-                ? OI.alliance == DriverStation.Alliance.Red
-                    ? AprilTagConstants.redReefTags
-                    : AprilTagConstants.blueReefTags
-                : this.allowedAprilTags);
-    rightCamAprilTag =
-        getAprilTag(
-            mCameras,
-            "ArducamR",
-            this.allowedAprilTags == null
-                ? OI.alliance == DriverStation.Alliance.Red
-                    ? AprilTagConstants.redReefTags
-                    : AprilTagConstants.blueReefTags
-                : this.allowedAprilTags);
+    leftCamAprilTag = getAprilTag(
+        mCameras,
+        "ArducamL",
+        this.allowedAprilTags == null
+            ? OI.alliance == DriverStation.Alliance.Red
+                ? AprilTagConstants.redReefTags
+                : AprilTagConstants.blueReefTags
+            : this.allowedAprilTags);
+    rightCamAprilTag = getAprilTag(
+        mCameras,
+        "ArducamR",
+        this.allowedAprilTags == null
+            ? OI.alliance == DriverStation.Alliance.Red
+                ? AprilTagConstants.redReefTags
+                : AprilTagConstants.blueReefTags
+            : this.allowedAprilTags);
 
     Pose2d currentPose = mDrivetrain.getState().Pose;
 
     if (leftCamAprilTag != null) {
       Transform3d bestCamToTarget = leftCamAprilTag.getBestCameraToTarget();
-      lastSeenAprilTagLeftCam =
-          new Pose2d(
-              bestCamToTarget.getX(),
-              bestCamToTarget.getY(),
-              bestCamToTarget.getRotation().toRotation2d());
+      lastSeenAprilTagLeftCam = new Pose2d(
+          bestCamToTarget.getX(),
+          bestCamToTarget.getY(),
+          bestCamToTarget.getRotation().toRotation2d());
 
       lastRobotPoseLeftCam = currentPose;
       robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
@@ -145,11 +141,10 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
     if (rightCamAprilTag != null) {
       Transform3d bestCamToTarget = rightCamAprilTag.getBestCameraToTarget();
-      lastSeenAprilTagRightCam =
-          new Pose2d(
-              bestCamToTarget.getX(),
-              bestCamToTarget.getY(),
-              bestCamToTarget.getRotation().toRotation2d());
+      lastSeenAprilTagRightCam = new Pose2d(
+          bestCamToTarget.getX(),
+          bestCamToTarget.getY(),
+          bestCamToTarget.getRotation().toRotation2d());
 
       lastRobotPoseRightCam = currentPose;
       robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
@@ -172,8 +167,8 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
     // Fieldcentric to robotcentric calculations
     // (https://www.canva.com/design/DAGgRZjmWXI/TYRSSrswz4FQHHXcytOO3g/view)
-    double fieldToRobotCentricAngle =
-        currentRobotPose.getRotation().getRadians() * -1 + Math.atan(xChangeField / yChangeField);
+    double fieldToRobotCentricAngle = currentRobotPose.getRotation().getRadians() * -1
+        + Math.atan(xChangeField / yChangeField);
     double xChange = Math.cos(fieldToRobotCentricAngle) * distanceChange;
     double yChange = Math.sin(fieldToRobotCentricAngle) * distanceChange;
     if (currentRobotPose.getY() < lastRobotPose.getY()) {
@@ -183,10 +178,12 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
     return new Pose2d(xChange, yChange, rotationChange);
   }
 
-  public void debugSubsystem() {}
+  public void debugSubsystem() {
+  }
 
   /**
-   * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN.
+   * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT
+   * NECESSARILY READY THEN.
    * CALL IN PERIODIC OR AUTONINIT. More details here:
    * https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
    */
@@ -203,14 +200,16 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
   /** Sets origin based on field side (red alliance or blue alliance) */
   private void setFieldOrigin() {
-    var origin =
-        DriverStation.getAlliance().get() == Alliance.Blue
-            ? OriginPosition.kBlueAllianceWallRightSide
-            : OriginPosition.kRedAllianceWallRightSide;
+    var origin = DriverStation.getAlliance().get() == Alliance.Blue
+        ? OriginPosition.kBlueAllianceWallRightSide
+        : OriginPosition.kRedAllianceWallRightSide;
     kFieldLayout.setOrigin(origin);
   }
 
-  /** Attempts to initalize vision and estimate robot pose after processing the vision feed */
+  /**
+   * Attempts to initalize vision and estimate robot pose after processing the
+   * vision feed
+   */
   @Override
   public void periodic() {
     saveTranslationToLastAprilTagDetected();
@@ -225,7 +224,8 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
   }
 
   /** A representation of the visions pose estimation and its confidence */
-  public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {}
+  public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {
+  }
 
   /**
    * @return the healthstate of the vision subsystem
@@ -239,9 +239,11 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
       if (camera == null || !camera.isConnected()) {
         state = Health.YELLOW;
         counter++;
-        if (camera.getName() == "ArducamL") {}
+        if (camera.getName() == "ArducamL") {
+        }
       } else {
-        if (camera.getName() == "ArducamR") {}
+        if (camera.getName() == "ArducamR") {
+        }
       }
     }
     // iff all of the cameras are null or not connected healthstate = red
