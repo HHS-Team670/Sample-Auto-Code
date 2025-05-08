@@ -6,10 +6,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Health.HealthChecker;
@@ -30,6 +27,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
 
   public List<SimTalonFX> motorSims = new ArrayList<>();
 
+  public double vxSim = 0;
+  public double vySim = 0;
+  public double omegaSim = 0;
+
   public static Drivetrain getInstance() {
     return mInstance;
   }
@@ -46,8 +47,11 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         DrivetrainConstants.BackRight);
 
     for (TalonFX m : getMotors()) {
-      motorSims.add(new SimTalonFX(m, TalonFXUtils.getConfig(m).MotionMagic.MotionMagicCruiseVelocity,
-          TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration));
+      motorSims.add(
+          new SimTalonFX(
+              m,
+              TalonFXUtils.getConfig(m).MotionMagic.MotionMagicCruiseVelocity,
+              TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration));
     }
   }
 
@@ -55,45 +59,18 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
 
   @Override
   public void setControl(SwerveRequest request) {
-    if (Robot.isSimulation() & request instanceof ApplyRobotSpeeds) {
-      count++;
-      Logger.recordOutput("Simulation/controlCount", count);
-      ApplyRobotSpeeds reqSpeeds = (ApplyRobotSpeeds) request;
-      ChassisSpeeds speeds = reqSpeeds.Speeds;
-      SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
-          new Translation2d(
-              DrivetrainConstants.kTrackWidthMeters / 2.0,
-              DrivetrainConstants.kWheelBaseMeters / 2.0),
-          new Translation2d(
-              DrivetrainConstants.kTrackWidthMeters / 2.0,
-              -DrivetrainConstants.kWheelBaseMeters / 2.0),
-          new Translation2d(
-              -DrivetrainConstants.kTrackWidthMeters / 2.0,
-              DrivetrainConstants.kWheelBaseMeters / 2.0),
-          new Translation2d(
-              -DrivetrainConstants.kTrackWidthMeters / 2.0,
-              -DrivetrainConstants.kWheelBaseMeters / 2.0));
-
-      SwerveModuleState[] moduleStates = kKinematics.toSwerveModuleStates(speeds);
-      for (int i = 0; i < moduleStates.length; i++) {
-        setSingleSimModuleState(moduleStates[i], i);
+    if (Robot.isSimulation()) {
+      if (request instanceof ApplyRobotSpeeds) {
+        ApplyRobotSpeeds reqSpeeds = (ApplyRobotSpeeds) request;
+        ChassisSpeeds speeds = reqSpeeds.Speeds;
+        vxSim = speeds.vxMetersPerSecond;
+        vySim = speeds.vyMetersPerSecond;
+        omegaSim = speeds.omegaRadiansPerSecond;
+      } else if (request instanceof SwerveRequest) {
       }
-      SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DrivetrainConstants.MaxSpeed);
     } else {
       super.setControl(request);
-
     }
-  }
-
-  public void setSingleSimModuleState(SwerveModuleState state, int index) {
-    state.optimize(state.angle);
-
-    SimTalonFX driveSim = motorSims.get(index * 2);
-    SimTalonFX steerSim = motorSims.get(index * 2 + 1);
-
-    driveSim.setSpeed(metersToMotorRotations(state.speedMetersPerSecond));
-    steerSim.setTargetPosition(
-        MustangMath.getRotationsFromDegrees(DrivetrainConstants.kSteerGearRatio, state.angle.getDegrees()));
   }
 
   public List<TalonFX> getMotors() {
@@ -107,7 +84,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   public double metersToMotorRotations(double meters) {
-    double wheelDegrees = meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
+    double wheelDegrees =
+        meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
     return MustangMath.getRotationsFromDegrees(DrivetrainConstants.kDriveGearRatio, wheelDegrees);
   }
 
@@ -118,8 +96,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a
-   * DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
    * class
    *
    * @param constants

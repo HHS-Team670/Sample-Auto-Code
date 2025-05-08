@@ -1,5 +1,10 @@
 package frc.team670.robot.Auton;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,17 +18,9 @@ import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
 import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.Drivetrain;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 public class Autos {
 
@@ -108,12 +105,11 @@ public class Autos {
           // case
           () -> false,
           mDrivetrain // Subsystem for requirements
-      );
+          );
 
     } catch (Exception ex) {
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
-
     }
   }
 }

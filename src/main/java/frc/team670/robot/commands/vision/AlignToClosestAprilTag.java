@@ -153,6 +153,10 @@ public class AlignToClosestAprilTag extends Command {
     yValue = (yDist * ySpeedModifier + yAdjustment);
     rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
 
+    mDrivetrain.vxSim = xValue;
+    mDrivetrain.vySim = yValue;
+    mDrivetrain.omegaSim = rotationValue;
+
     mDrivetrain.setControl(
         drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));
   }
@@ -178,6 +182,10 @@ public class AlignToClosestAprilTag extends Command {
     yValue = 0;
     rotationValue = 0;
     AligningToAprilTag = false;
+
+    mDrivetrain.vxSim = 0;
+    mDrivetrain.vySim = 0;
+    mDrivetrain.omegaSim = 0;
 
     timer.stop();
     timer.reset();

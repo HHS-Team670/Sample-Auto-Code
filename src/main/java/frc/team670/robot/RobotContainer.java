@@ -4,43 +4,55 @@
 
 package frc.team670.robot;
 
-import java.util.List;
+import static frc.team670.libs.IO.XboxJoysticButtons.driverUtils;
 
-import org.littletonrobotics.junction.Logger;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.team670.libs.Auto.ChoreoCommand;
 import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.simulation.SimTalonFX;
-import frc.team670.libs.simulation.SimulatedSubsytem;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.Auton.Autos;
+import frc.team670.robot.commands.vision.AlignToClosestAprilTag;
+import frc.team670.robot.constants.DrivetrainConstants;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Claw;
+import frc.team670.robot.subsystems.Climb;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Elevator;
+import frc.team670.robot.subsystems.LED;
 import frc.team670.robot.subsystems.Tilter;
 import frc.team670.robot.subsystems.Vision;
+import java.util.List;
+import org.littletonrobotics.junction.Logger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  Drivetrain mDrivetrain = Drivetrain.getInstance();
+  Arm mArm = Arm.getInstance();
+  Elevator mElevator = Elevator.getInstance();
+  Tilter mTilter = Tilter.getInstance();
+  Claw mClaw = Claw.getInstance();
+  LED mLed = LED.getInstance();
+  AlgaeManipulator mAlgaeManipulator = AlgaeManipulator.getInstance();
+  Climb mClimb = Climb.getInstance();
+  Vision mVision = Vision.getInstance();
+
+  double lastSimTime = 0.0;
 
   public RobotContainer() {
     OI.configureBindings();
-    registerSubsytems(
-        Drivetrain.getInstance());
+    registerSubsytems(mDrivetrain, mArm, mElevator, mTilter, mClaw, mLed, mClaw, mVision);
   }
 
   /** This is to be used within the {@link Robot} class to register subsytems */
@@ -60,29 +72,22 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     Autos.configureAutoBuilder();
-    return new ChoreoCommand("C, 1R");
+    return Autos.getNamed("left");
   }
 
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
-  public void autonomousInit() {
-  }
+  public void autonomousInit() {}
 
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
-  public void testInit() {
-  }
+  public void testInit() {}
 
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   public Timer timer = new Timer();
 
@@ -91,20 +96,37 @@ public class RobotContainer {
 
     List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
     for (Subsystem sub : allSubsystems) {
-      if (sub instanceof MotorizedSubsytem) {
-
-      }
+      if (sub instanceof MotorizedSubsytem) {}
     }
   }
 
   public void simulationPeriodic() {
+    double dt = timer.get();
+
     if (SimTalonFX.simMotors != null) {
       int index = 0;
       for (SimTalonFX sim : SimTalonFX.simMotors) {
-        sim.update(timer.get());
+        sim.update(dt);
         Logger.recordOutput("Simulation/motor" + index, sim.getSimPosition());
         index++;
       }
+    }
+
+    if (Robot.isSimulation()) {
+      Pose2d oldPose = mDrivetrain.getState().Pose;
+      Pose2d newPose =
+          oldPose.exp(
+              new Twist2d(
+                  mDrivetrain.vxSim * dt, mDrivetrain.vySim * dt, mDrivetrain.omegaSim * dt));
+      mDrivetrain.resetPose(newPose);
+    }
+
+    if (Robot.isSimulation()
+        && DriverStation.isTeleopEnabled()
+        && !AlignToClosestAprilTag.AligningToAprilTag) {
+      mDrivetrain.vxSim = -driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed;
+      mDrivetrain.vySim = -driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed;
+      mDrivetrain.omegaSim = -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate;
     }
 
     timer.restart();
