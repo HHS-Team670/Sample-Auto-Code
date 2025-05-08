@@ -3,7 +3,6 @@ package frc.team670.robot.commands.vision;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -11,9 +10,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
-import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AlignToClosestAprilTag extends Command {
@@ -31,25 +30,20 @@ public class AlignToClosestAprilTag extends Command {
 
   private Timer timer = new Timer();
 
-  SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  SwerveRequest.RobotCentric drive =
+      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   private double xDist = 0;
   private double yDist = 0;
   private double rotation = 0;
 
-  double xValue = 0;
-  double yValue = 0;
-  double rotationValue = 0;
-
   private boolean hasFoundAprilTag;
 
   private double metersBack;
 
   private CAMERA_SIDE cameraSide = null;
-
-  public static int simTag;
+  private CAMERA_SIDE cameraSideToUse;
 
   // Adjust these modifiers as needed
   private static final double xSpeedModifier = 1;
@@ -79,7 +73,7 @@ public class AlignToClosestAprilTag extends Command {
 
     mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0));
 
-    CAMERA_SIDE cameraSideToUse = (this.cameraSide == null ? OI.cameraSide : this.cameraSide);
+    this.cameraSideToUse = (this.cameraSide == null ? OI.cameraSide : this.cameraSide);
 
     if (cameraSideToUse == CAMERA_SIDE.LEFT) {
       this.cameraName = "ArducamL";
@@ -107,11 +101,7 @@ public class AlignToClosestAprilTag extends Command {
 
     if (aprilTag != null) {
       hasFoundAprilTag = true;
-      Transform3d normalTag = aprilTag.getBestCameraToTarget();
-      Pose3d target = new Pose3d(normalTag.getX(), normalTag.getY(), normalTag.getZ(), normalTag.getRotation());
-      if (Robot.isSimulation()) {
-        target = mVision.getClosestSimTarget(cameraSide);
-      }
+      Transform3d target = aprilTag.getBestCameraToTarget();
 
       xDist = target.getX() - metersBack - xOffset;
       if (xDist < 0) {
@@ -126,13 +116,15 @@ public class AlignToClosestAprilTag extends Command {
       }
     } else if (hasFoundAprilTag) {
       try {
-        Pose2d lastAprilTag = cameraName == "ArducamL"
-            ? mVision.lastSeenAprilTagLeftCam
-            : mVision.lastSeenAprilTagRightCam;
+        Pose2d lastAprilTag =
+            cameraName == "ArducamL"
+                ? mVision.lastSeenAprilTagLeftCam
+                : mVision.lastSeenAprilTagRightCam;
 
-        Pose2d lastRobotCentriChange = cameraName == "ArducamL"
-            ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-            : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
+        Pose2d lastRobotCentriChange =
+            cameraName == "ArducamL"
+                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
         double xChange = lastRobotCentriChange.getX();
         double yChange = lastRobotCentriChange.getY();
@@ -155,13 +147,18 @@ public class AlignToClosestAprilTag extends Command {
       rotation = 0;
     }
 
-    xValue = (xDist * xSpeedModifier + xAdjustment);
-    yValue = (yDist * ySpeedModifier + yAdjustment);
-    rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
+    double xValue = (xDist * xSpeedModifier + xAdjustment);
+    double yValue = (yDist * ySpeedModifier + yAdjustment);
+    double rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
 
-    mDrivetrain.vxSim = xValue;
-    mDrivetrain.vySim = yValue;
-    mDrivetrain.omegaSim = rotationValue;
+    Pose2d simDistToAprilTag = mVision.getClosestSimTarget(cameraSideToUse);
+    Logger.recordOutput("Simulation/XDist", simDistToAprilTag.getX());
+    Logger.recordOutput("Simulation/YDist", simDistToAprilTag.getY());
+    mDrivetrain.vxSim = (simDistToAprilTag.getX() * xSpeedModifier + xAdjustment);
+    mDrivetrain.vySim = (simDistToAprilTag.getY() * ySpeedModifier + yAdjustment);
+    mDrivetrain.omegaSim =
+        (simDistToAprilTag.getRotation().getRadians() * rotationSpeedModifier + rotationAdjustment);
+    mDrivetrain.omegaSim = 0;
 
     mDrivetrain.setControl(
         drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));
@@ -184,9 +181,6 @@ public class AlignToClosestAprilTag extends Command {
   @Override
   public void end(boolean interrupted) {
     mDrivetrain.setControl(drive.withVelocityY(0).withVelocityX(0).withRotationalRate(0));
-    xValue = 0;
-    yValue = 0;
-    rotationValue = 0;
     AligningToAprilTag = false;
 
     mDrivetrain.vxSim = 0;

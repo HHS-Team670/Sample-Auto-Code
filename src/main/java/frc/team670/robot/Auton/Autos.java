@@ -20,7 +20,6 @@ import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.Drivetrain;
 import java.util.HashMap;
 import java.util.Map;
-import org.littletonrobotics.junction.Logger;
 
 public class Autos {
 
@@ -93,7 +92,6 @@ public class Autos {
                     .withSpeeds(speeds)
                     .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                     .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons()));
-            Logger.recordOutput("Simulation/called", true);
           },
           new PPHolonomicDriveController(
               // PID constants for translation

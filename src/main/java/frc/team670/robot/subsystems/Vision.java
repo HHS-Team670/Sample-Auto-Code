@@ -5,13 +5,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -20,15 +19,14 @@ import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
 import frc.team670.robot.OI;
-import frc.team670.robot.Robot;
-import frc.team670.robot.commands.vision.AlignToClosestAprilTag;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.constants.AprilTagConstants;
 import frc.team670.robot.constants.VisionConstants;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -73,49 +71,6 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
     }
   }
 
-  public Pose3d getSimTarget(int tagID, CAMERA_SIDE side) {
-    Pose2d currentPose = mDrivetrain.getState().Pose;
-    Pose2d tagPose = AprilTagConstants.aprilTagPoses.get(tagID);
-    Transform3d cameraLocation = VisionConstants.kCameraOffsets[0];
-    Pose2d cameraPose = currentPose.transformBy(new Transform2d(
-        new Translation2d(cameraLocation.getX(), cameraLocation.getY()), cameraLocation.getRotation().toRotation2d()));
-
-    Pose3d tagPose3d = new Pose3d(tagPose.getX(), tagPose.getY(), 0,
-        new Rotation3d(0, 0, tagPose.getRotation().getRadians())); // idk where to get camera rotation from
-    Pose3d cameraPose3d = new Pose3d(cameraPose.getX(), cameraPose.getY(), 0,
-        cameraLocation.getRotation());
-
-    Pose3d cameraToTag = tagPose3d.relativeTo(cameraPose3d);
-
-    return cameraToTag;
-  }
-
-  public Pose3d getClosestSimTarget(CAMERA_SIDE side) {
-    Pose2d currentPose = mDrivetrain.getState().Pose;
-
-    Transform3d cameraLocation = VisionConstants.kCameraOffsets[0];
-
-    Pose2d cameraPose = currentPose.transformBy(new Transform2d(
-        new Translation2d(cameraLocation.getX(), cameraLocation.getY()), cameraLocation.getRotation().toRotation2d()));
-
-    List<Pose2d> tags = new ArrayList<>();
-
-    AprilTagConstants.aprilTagPoses.forEach((index, pose) -> {
-      tags.add(pose);
-    });
-
-    Pose2d tagPose = cameraPose.nearest(tags);
-
-    Pose3d tagPose3d = new Pose3d(tagPose.getX(), tagPose.getY(), 0,
-        new Rotation3d(0, 0, tagPose.getRotation().getRadians())); // idk where to get camera rotation from
-    Pose3d cameraPose3d = new Pose3d(cameraPose.getX(), cameraPose.getY(), 0,
-        cameraLocation.getRotation());
-
-    Pose3d cameraToTag = tagPose3d.relativeTo(cameraPose3d);
-    AlignToClosestAprilTag.simTag = tags.indexOf(tagPose);
-    return cameraToTag;
-  }
-
   private PhotonTrackedTarget getAprilTag(
       PhotonCamera[] cameras, String nameAssignment, int[] allowedAprilTags) {
     try {
@@ -139,8 +94,9 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
             for (var target : targets) {
               for (int aprilTagNumber : allowedAprilTags) {
                 if (target.getFiducialId() == aprilTagNumber) {
-                  double angle = Math.abs(
-                      target.getBestCameraToTarget().getRotation().toRotation2d().getDegrees());
+                  double angle =
+                      Math.abs(
+                          target.getBestCameraToTarget().getRotation().toRotation2d().getDegrees());
                   if (angle < 160) {
                     continue;
                   }
@@ -161,76 +117,62 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
   }
 
   private void saveTranslationToLastAprilTagDetected() {
-    leftCamAprilTag = getAprilTag(
-        mCameras,
-        "ArducamL",
-        this.allowedAprilTags == null
-            ? OI.alliance == DriverStation.Alliance.Red
-                ? AprilTagConstants.redReefTags
-                : AprilTagConstants.blueReefTags
-            : this.allowedAprilTags);
-    rightCamAprilTag = getAprilTag(
-        mCameras,
-        "ArducamR",
-        this.allowedAprilTags == null
-            ? OI.alliance == DriverStation.Alliance.Red
-                ? AprilTagConstants.redReefTags
-                : AprilTagConstants.blueReefTags
-            : this.allowedAprilTags);
+    leftCamAprilTag =
+        getAprilTag(
+            mCameras,
+            "ArducamL",
+            this.allowedAprilTags == null
+                ? OI.alliance == DriverStation.Alliance.Red
+                    ? AprilTagConstants.redReefTags
+                    : AprilTagConstants.blueReefTags
+                : this.allowedAprilTags);
+    rightCamAprilTag =
+        getAprilTag(
+            mCameras,
+            "ArducamR",
+            this.allowedAprilTags == null
+                ? OI.alliance == DriverStation.Alliance.Red
+                    ? AprilTagConstants.redReefTags
+                    : AprilTagConstants.blueReefTags
+                : this.allowedAprilTags);
 
     Pose2d currentPose = mDrivetrain.getState().Pose;
 
     if (leftCamAprilTag != null) {
       Transform3d bestCamToTarget = leftCamAprilTag.getBestCameraToTarget();
-      lastSeenAprilTagLeftCam = new Pose2d(
-          bestCamToTarget.getX(),
-          bestCamToTarget.getY(),
-          bestCamToTarget.getRotation().toRotation2d());
-
-      lastRobotPoseLeftCam = currentPose;
-      robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
-    } else if (Robot.isSimulation()) {
-      Pose3d bestCamToTarget = getClosestSimTarget(OI.cameraSide);
-      lastSeenAprilTagLeftCam = new Pose2d(
-          bestCamToTarget.getX(),
-          bestCamToTarget.getY(),
-          bestCamToTarget.getRotation().toRotation2d());
+      lastSeenAprilTagLeftCam =
+          new Pose2d(
+              bestCamToTarget.getX(),
+              bestCamToTarget.getY(),
+              bestCamToTarget.getRotation().toRotation2d());
 
       lastRobotPoseLeftCam = currentPose;
       robotCentricChangeSinceSeenLeftCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
     } else {
-      robotCentricChangeSinceSeenLeftCamAprilTag = getRobotCentricChange(true);
+      robotCentricChangeSinceSeenLeftCamAprilTag =
+          getRobotCentricFromFieldCentricChange(currentPose, lastRobotPoseLeftCam);
     }
 
     if (rightCamAprilTag != null) {
       Transform3d bestCamToTarget = rightCamAprilTag.getBestCameraToTarget();
-      lastSeenAprilTagRightCam = new Pose2d(
-          bestCamToTarget.getX(),
-          bestCamToTarget.getY(),
-          bestCamToTarget.getRotation().toRotation2d());
-
-      lastRobotPoseRightCam = currentPose;
-      robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
-    } else if (Robot.isSimulation()) {
-      Pose3d bestCamToTarget = getClosestSimTarget(OI.cameraSide);
-      lastSeenAprilTagRightCam = new Pose2d(
-          bestCamToTarget.getX(),
-          bestCamToTarget.getY(),
-          bestCamToTarget.getRotation().toRotation2d());
+      lastSeenAprilTagRightCam =
+          new Pose2d(
+              bestCamToTarget.getX(),
+              bestCamToTarget.getY(),
+              bestCamToTarget.getRotation().toRotation2d());
 
       lastRobotPoseRightCam = currentPose;
       robotCentricChangeSinceSeenRightCamAprilTag = new Pose2d(0, 0, new Rotation2d(0));
     } else {
-      robotCentricChangeSinceSeenRightCamAprilTag = getRobotCentricChange(false);
+      robotCentricChangeSinceSeenRightCamAprilTag =
+          getRobotCentricFromFieldCentricChange(currentPose, lastRobotPoseRightCam);
     }
   }
 
-  private Pose2d getRobotCentricChange(boolean isLeftCamera) {
-    Pose2d lastRobotPose = isLeftCamera ? lastRobotPoseLeftCam : lastRobotPoseRightCam;
-    Pose2d currentRobotPose = mDrivetrain.getState().Pose;
-    double xChangeField = currentRobotPose.getX() - lastRobotPose.getX();
-    double yChangeField = currentRobotPose.getY() - lastRobotPose.getY();
-    Rotation2d rotationChange = currentRobotPose.getRotation().minus(lastRobotPose.getRotation());
+  private Pose2d getRobotCentricFromFieldCentricChange(Pose2d firstPos, Pose2d secondPos) {
+    double xChangeField = firstPos.getX() - secondPos.getX();
+    double yChangeField = firstPos.getY() - secondPos.getY();
+    Rotation2d rotationChange = firstPos.getRotation().minus(secondPos.getRotation());
     double distanceChange = Math.sqrt(Math.pow(xChangeField, 2) + Math.pow(yChangeField, 2));
 
     if (yChangeField == 0) {
@@ -239,23 +181,76 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
     // Fieldcentric to robotcentric calculations
     // (https://www.canva.com/design/DAGgRZjmWXI/TYRSSrswz4FQHHXcytOO3g/view)
-    double fieldToRobotCentricAngle = currentRobotPose.getRotation().getRadians() * -1
-        + Math.atan(xChangeField / yChangeField);
+    double fieldToRobotCentricAngle =
+        firstPos.getRotation().getRadians() * -1 + Math.atan(xChangeField / yChangeField);
     double xChange = Math.cos(fieldToRobotCentricAngle) * distanceChange;
     double yChange = Math.sin(fieldToRobotCentricAngle) * distanceChange;
-    if (currentRobotPose.getY() < lastRobotPose.getY()) {
+    if (firstPos.getY() < secondPos.getY()) {
       xChange *= -1;
       yChange *= -1;
     }
     return new Pose2d(xChange, yChange, rotationChange);
   }
 
-  public void debugSubsystem() {
+  public Pose2d getClosestSimTarget(CAMERA_SIDE cameraSide) {
+    Pose2d currentPose = mDrivetrain.getState().Pose;
+
+    Transform3d cameraTransformation =
+        VisionConstants.kCameraOffsets[cameraSide == CAMERA_SIDE.LEFT ? 1 : 0];
+    Pose2d cameraPose =
+        currentPose.transformBy(
+            new Transform2d(
+                new Translation2d(cameraTransformation.getX(), cameraTransformation.getY()),
+                cameraTransformation.getRotation().toRotation2d()));
+
+    List<Pose2d> tags = new ArrayList<>();
+    double bestRotation = Double.MAX_VALUE;
+    Pose2d bestTag = null;
+    for (Map.Entry<Integer, Pose2d> entry : AprilTagConstants.aprilTagPoses.entrySet()) {
+      int index = entry.getKey();
+      Pose2d pose = entry.getValue();
+
+      if (OI.alliance == DriverStation.Alliance.Red
+          ? (index >= 6 && index <= 11)
+          : (index >= 17 && index <= 22)) {
+        tags.add(pose);
+        double rotationDiff =
+            Math.abs(
+                currentPose.getRotation().getRadians()
+                    - ((pose.getRotation().getRadians() + Math.PI) % (2 * Math.PI)));
+        if (rotationDiff < bestRotation) {
+          bestRotation = rotationDiff;
+          bestTag = pose;
+        }
+      }
+    }
+
+    Pose2d aprilTagIdChecker = bestTag;
+    Optional<Integer> matchingKey =
+        AprilTagConstants.aprilTagPoses.entrySet().stream()
+            .filter(entry -> entry.getValue().equals(aprilTagIdChecker))
+            .map(Map.Entry::getKey)
+            .findFirst();
+    if (matchingKey.isPresent()) {
+      Logger.recordOutput("Simulation/AprilTagID", matchingKey.get());
+    }
+
+    Pose2d tagPoseInMeters =
+        new Pose2d(
+            Units.inchesToMeters(bestTag.getX()),
+            Units.inchesToMeters(bestTag.getY()),
+            bestTag.getRotation());
+
+    return new Pose2d(
+        tagPoseInMeters.getX() - cameraPose.getX(),
+        tagPoseInMeters.getY() - cameraPose.getY(),
+        tagPoseInMeters.getRotation().minus(cameraPose.getRotation()));
   }
 
+  public void debugSubsystem() {}
+
   /**
-   * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT
-   * NECESSARILY READY THEN.
+   * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN.
    * CALL IN PERIODIC OR AUTONINIT. More details here:
    * https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
    */
@@ -272,16 +267,14 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
 
   /** Sets origin based on field side (red alliance or blue alliance) */
   private void setFieldOrigin() {
-    var origin = DriverStation.getAlliance().get() == Alliance.Blue
-        ? OriginPosition.kBlueAllianceWallRightSide
-        : OriginPosition.kRedAllianceWallRightSide;
+    var origin =
+        DriverStation.getAlliance().get() == Alliance.Blue
+            ? OriginPosition.kBlueAllianceWallRightSide
+            : OriginPosition.kRedAllianceWallRightSide;
     kFieldLayout.setOrigin(origin);
   }
 
-  /**
-   * Attempts to initalize vision and estimate robot pose after processing the
-   * vision feed
-   */
+  /** Attempts to initalize vision and estimate robot pose after processing the vision feed */
   @Override
   public void periodic() {
     saveTranslationToLastAprilTagDetected();
@@ -296,8 +289,7 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
   }
 
   /** A representation of the visions pose estimation and its confidence */
-  public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {
-  }
+  public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {}
 
   /**
    * @return the healthstate of the vision subsystem
@@ -311,11 +303,9 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
       if (camera == null || !camera.isConnected()) {
         state = Health.YELLOW;
         counter++;
-        if (camera.getName() == "ArducamL") {
-        }
+        if (camera.getName() == "ArducamL") {}
       } else {
-        if (camera.getName() == "ArducamR") {
-        }
+        if (camera.getName() == "ArducamR") {}
       }
     }
     // iff all of the cameras are null or not connected healthstate = red
