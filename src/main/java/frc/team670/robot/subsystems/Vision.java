@@ -241,10 +241,7 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
             Units.inchesToMeters(bestTag.getY()),
             bestTag.getRotation());
 
-    return new Pose2d(
-        tagPoseInMeters.getX() - cameraPose.getX(),
-        tagPoseInMeters.getY() - cameraPose.getY(),
-        tagPoseInMeters.getRotation().minus(cameraPose.getRotation()));
+    return tagPoseInMeters.relativeTo(cameraPose);
   }
 
   public void debugSubsystem() {}

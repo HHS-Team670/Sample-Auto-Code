@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
+import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +28,8 @@ public class AlignToClosestAprilTag extends Command {
   public static PhotonTrackedTarget aprilTag;
   private Vision mVision = Vision.getInstance();
   String cameraName;
+
+  Pose2d simDistToAprilTag;
 
   private Timer timer = new Timer();
 
@@ -151,7 +154,7 @@ public class AlignToClosestAprilTag extends Command {
     double yValue = (yDist * ySpeedModifier + yAdjustment);
     double rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
 
-    Pose2d simDistToAprilTag = mVision.getClosestSimTarget(cameraSideToUse);
+    simDistToAprilTag = mVision.getClosestSimTarget(cameraSideToUse);
     Logger.recordOutput("Simulation/XDist", simDistToAprilTag.getX());
     Logger.recordOutput("Simulation/YDist", simDistToAprilTag.getY());
     mDrivetrain.vxSim = (simDistToAprilTag.getX() * xSpeedModifier + xAdjustment);
@@ -173,6 +176,11 @@ public class AlignToClosestAprilTag extends Command {
 
     if (DriverStation.isAutonomousEnabled() && timer.hasElapsed(3)) {
       return true;
+    }
+
+    if (Robot.isSimulation()) {
+      return (Math.abs(simDistToAprilTag.getY()) < 0.02)
+          && (Math.abs(simDistToAprilTag.getX()) < 0.08);
     }
 
     return (Math.abs(yDist) < 0.02) && (Math.abs(xDist) < 0.08) && hasFoundAprilTag;
