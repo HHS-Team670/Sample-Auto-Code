@@ -5,6 +5,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.Utilities.MustangMath;
+import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.simulation.SimulatedSubsytem;
 
 import java.util.ArrayList;
@@ -118,6 +120,8 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    *                  the `motors` list.
    */
   public void setMotorTarget(double rotations, int index) {
+    SimTalonFX sim = TalonFXUtils.simMotors.get(motors.get(index));
+    sim.setTargetPosition(rotations);
     motors.get(index).setControl(new MotionMagicVoltage(0).withPosition(rotations));
   }
 
@@ -150,11 +154,14 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    *              the `motors` list.
    */
   protected void setMotorTargetDegrees(double theta, int index) {
+    SimTalonFX sim = TalonFXUtils.simMotors.get(motors.get(index));
+    sim.setTargetPosition(MustangMath.getRotationsFromDegrees(gearRatio, theta));
     motors
         .get(index)
         .setControl(
             new MotionMagicVoltage(0)
                 .withPosition(MustangMath.getRotationsFromDegrees(gearRatio, theta)));
+
   }
 
   /**

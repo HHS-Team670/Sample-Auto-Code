@@ -4,6 +4,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Health.HealthChecker;
@@ -35,8 +37,15 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         DrivetrainConstants.BackRight);
   }
 
+  @Override
+  public void setControl(SwerveRequest request) {
+
+    super.setControl(request);
+  }
+
   public List<TalonFX> getMotors() {
     List<TalonFX> motors = new ArrayList<>();
+
     for (SwerveModule<TalonFX, TalonFX, CANcoder> m : getModules()) {
       motors.add(m.getDriveMotor());
       motors.add(m.getSteerMotor());
