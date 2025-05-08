@@ -51,7 +51,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a
+   * DriveConstants
    * class
    *
    * @param constants

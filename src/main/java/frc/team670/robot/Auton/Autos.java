@@ -104,6 +104,7 @@ public class Autos {
           () -> false,
           mDrivetrain // Subsystem for requirements
       );
+
     } catch (Exception ex) {
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());

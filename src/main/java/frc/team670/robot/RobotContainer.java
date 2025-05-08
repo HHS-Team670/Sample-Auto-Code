@@ -4,10 +4,16 @@
 
 package frc.team670.robot;
 
+import java.util.List;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team670.libs.Auto.ChoreoCommand;
 import frc.team670.libs.Health.HealthChecker;
+
+import frc.team670.libs.simulation.SimulatedSubsytem;
+import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.Auton.Autos;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 import frc.team670.robot.subsystems.Arm;
@@ -56,7 +62,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.getNamed("center");
+    Autos.configureAutoBuilder();
+    return new ChoreoCommand("C, 1R");
   }
 
   public void robotPeriodic() {
@@ -81,6 +88,15 @@ public class RobotContainer {
   }
 
   public void simulationInit() {
+    List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
+
+    for (Subsystem sub : allSubsystems) {
+      if (sub instanceof MotorizedSubsytem) {
+        MotorizedSubsytem mSub = (MotorizedSubsytem) sub;
+        mSub.Sim = new SimulatedSubsytem(mSub);
+      }
+    }
+
   }
 
   public void simulationPeriodic() {

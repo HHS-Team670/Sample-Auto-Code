@@ -3,13 +3,24 @@ package frc.team670.libs.Health;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Utilities.ConsoleLogger;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class HealthChecker {
 
   public static Map<Subsystem, Health> healthStates = new HashMap<>();
+
+  public static List<Subsystem> getSubsystems() {
+    List<Subsystem> subsystems = new ArrayList<>();
+    healthStates.forEach((s, h) -> {
+      subsystems.add(s);
+    });
+    return subsystems;
+  }
 
   public static void reportHealth(Subsystem subsytem, Health state) {
     if (healthStates.get(subsytem) == null) {
