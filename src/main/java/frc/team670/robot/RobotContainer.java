@@ -32,9 +32,12 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -72,22 +75,29 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     Autos.configureAutoBuilder();
-    return Autos.getNamed("right");
+    return Autos.getNamed("left");
   }
 
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
-  public void testInit() {}
+  public void testInit() {
+  }
 
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   public Timer timer = new Timer();
 
@@ -96,7 +106,8 @@ public class RobotContainer {
 
     List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
     for (Subsystem sub : allSubsystems) {
-      if (sub instanceof MotorizedSubsytem) {}
+      if (sub instanceof MotorizedSubsytem) {
+      }
     }
   }
 
@@ -107,17 +118,16 @@ public class RobotContainer {
       int index = 0;
       for (SimTalonFX sim : SimTalonFX.simMotors) {
         sim.update(dt);
-        Logger.recordOutput("Simulation/motor" + index, sim.getSimPosition());
+        Logger.recordOutput("Simulation/motors/motor" + index, sim.getSimPosition());
         index++;
       }
     }
 
     if (Robot.isSimulation()) {
       Pose2d oldPose = mDrivetrain.getState().Pose;
-      Pose2d newPose =
-          oldPose.exp(
-              new Twist2d(
-                  mDrivetrain.vxSim * dt, mDrivetrain.vySim * dt, mDrivetrain.omegaSim * dt));
+      Pose2d newPose = oldPose.exp(
+          new Twist2d(
+              mDrivetrain.vxSim * dt, mDrivetrain.vySim * dt, mDrivetrain.omegaSim * dt));
       mDrivetrain.resetPose(newPose);
     }
 
