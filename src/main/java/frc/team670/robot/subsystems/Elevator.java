@@ -1,7 +1,6 @@
 package frc.team670.robot.subsystems;
 
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -9,7 +8,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
+import frc.team670.robot.Robot;
 import frc.team670.robot.constants.ElevatorConstants;
 import frc.team670.robot.constants.RobotPosition;
 import org.littletonrobotics.junction.Logger;
@@ -56,26 +57,32 @@ public class Elevator extends MotorizedSubsytem {
     }
   }
 
+  SimTalonFX sim;
+
   private Elevator() {
 
-    leadMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
-    followerMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.followerMotorID,
-            ElevatorConstants.followerMotorConfiguration,
-            getName(),
-            0);
+    leadMotor = TalonFXUtils.construct(
+        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
 
-    registerMotors(leadMotor, followerMotor);
+    sim = TalonFXUtils.simMotors.get(leadMotor);
+
+    registerMotors(leadMotor);
     setGearRatio(ElevatorConstants.kGearRatio);
 
-    followerMotor.setControl(
-        new Follower(ElevatorConstants.leadMotorID, ElevatorConstants.kInvertFollower));
+    if (Robot.isReal()) {
+      followerMotor.setControl(
+          new Follower(ElevatorConstants.leadMotorID, ElevatorConstants.kInvertFollower));
+      registerMotors(followerMotor);
+      followerMotor = TalonFXUtils.construct(
+          ElevatorConstants.followerMotorID,
+          ElevatorConstants.followerMotorConfiguration,
+          getName(),
+          0);
+    }
 
     bottomLimitSwitch = new DigitalInput(9);
     topLimitSwitch = new DigitalInput(8);
+
   }
 
   public static Elevator getInstance() {
@@ -91,38 +98,47 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   public double getHeightInMeters() {
-    height =
-        (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
-            * (ElevatorConstants.kCircumferenceSprocket);
+    height = (leadMotor.getPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
+        * (ElevatorConstants.kCircumferenceSprocket);
     return height;
   }
 
   public void setTargetHeight(RobotPosition robotPos) {
+    Logger.recordOutput("Simulation/Elevator/pos", robotPos);
     moveToTargetHeight(robotPos.getElevatorHeight());
   }
 
   public void moveToTargetHeight(double meters) {
-    if (isTopLimitSwitchTripped()) {
+    if (isTopLimitSwitchTripped() && Robot.isReal()) {
       if (meters > this.getHeightInMeters()) {
         return;
       }
     }
 
     double oldSetpoint = mSetpoint;
-    mSetpoint =
-        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+    mSetpoint = (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
     if (mSetpoint < 0) {
       mSetpoint = 0;
+    }
+
+    if (Robot.isSimulation()) {
+      return;
     }
 
     if ((oldSetpoint - mSetpoint > 0 && isBottomLimitSwitchTripped())
         || !checkSoftLimits(mSetpoint)) {
       mSetpoint = oldSetpoint;
+
       return;
     }
   }
 
   protected void checkInterference() {
+
+    if (Robot.isSimulation()) {
+      setMotorTarget(mSetpoint);
+    }
+
     if (!hasBeenZeroed) {
       return;
     }
@@ -131,7 +147,6 @@ public class Elevator extends MotorizedSubsytem {
     // If no interference, continue moving
     if ((currentArmAngle > 0 && currentArmAngle < 90)
         || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {
-      leadMotor.setControl(new MotionMagicVoltage(0).withPosition(mSetpoint).withSlot(0));
     }
   }
 
@@ -179,7 +194,14 @@ public class Elevator extends MotorizedSubsytem {
   public void periodic() {
     super.periodic();
 
-    if (isBottomLimitSwitchTripped() && !hasBeenZeroed) {
+    if (Robot.isSimulation()) {
+      hasOverridedLimitSwitches = true;
+      hasBeenZeroed = true;
+      checkInterference();
+      return;
+    }
+
+    if ((isBottomLimitSwitchTripped() && !hasBeenZeroed)) {
       resetOffset();
       zeroElevator();
 
@@ -214,9 +236,8 @@ public class Elevator extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    height =
-        (TalonFXUtils.simMotors.get(leadMotor).getSimPosition() / ElevatorConstants.kGearRatio)
-            * (ElevatorConstants.kCircumferenceSprocket);
+    height = (TalonFXUtils.simMotors.get(leadMotor).getSimPosition() / ElevatorConstants.kGearRatio)
+        * (ElevatorConstants.kCircumferenceSprocket);
     return new Pose3d(0, 0, height, new Rotation3d());
   }
 }

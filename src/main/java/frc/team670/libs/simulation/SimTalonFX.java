@@ -18,6 +18,8 @@ public class SimTalonFX {
   private final double maxVelocity; // rotations/sec
   private final double maxAcceleration; // rotations/sec^2
 
+  private boolean isInvered;
+
   public String name;
 
   public SimTalonFX(
@@ -25,12 +27,14 @@ public class SimTalonFX {
       double maxVelocity,
       double maxAcceleration,
       String name,
-      double startPosition) {
+      double startPosition,
+      boolean isInvered) {
     this.motor = motor;
     this.simState = motor.getSimState();
     this.maxVelocity = maxVelocity;
     this.maxAcceleration = maxAcceleration;
     this.name = name;
+    this.isInvered = isInvered;
     simMotors.add(this);
     setStartPosition(startPosition);
   }
@@ -50,7 +54,10 @@ public class SimTalonFX {
     if (Math.abs(error) < 0.05) {
       error = 0;
     }
-    double direction = -Math.signum(error);
+    double direction = Math.signum(error);
+    if (isInvered) {
+      direction = -direction;
+    }
     double distanceRemaining = Math.abs(error);
 
     // Compute the velocity needed to stop at the target

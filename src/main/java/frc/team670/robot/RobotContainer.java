@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.simulation.SimTalonFX;
-import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.Auton.Autos;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag;
 import frc.team670.robot.constants.DrivetrainConstants;
@@ -106,11 +105,6 @@ public class RobotContainer {
   public void simulationInit() {
     timer.start();
 
-    List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
-    for (Subsystem sub : allSubsystems) {
-      if (sub instanceof MotorizedSubsytem) {
-      }
-    }
   }
 
   public void simulationPeriodic() {

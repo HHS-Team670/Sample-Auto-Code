@@ -53,7 +53,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
               TalonFXUtils.getConfig(m).MotionMagic.MotionMagicCruiseVelocity,
               TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration,
               "DrivetrainMotor",
-              0));
+              0,
+              true));
     }
   }
 
@@ -86,8 +87,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   public double metersToMotorRotations(double meters) {
-    double wheelDegrees =
-        meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
+    double wheelDegrees = meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
     return MustangMath.getRotationsFromDegrees(DrivetrainConstants.kDriveGearRatio, wheelDegrees);
   }
 
@@ -98,7 +98,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a
+   * DriveConstants
    * class
    *
    * @param constants

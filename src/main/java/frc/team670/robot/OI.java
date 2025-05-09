@@ -87,7 +87,7 @@ public class OI {
 
     Driver_ButtonBack.onTrue(new Park());
 
-    Driver_ButtonStart.onTrue(() -> mDrivetrain.seedFieldCentric());
+    Driver_ButtonStart.onTrue(() -> Elevator.getInstance().setTargetHeight(RobotPosition.L4));
   }
 
   public static void configureOperatorControls() {
@@ -113,23 +113,22 @@ public class OI {
 
     mDrivetrain.setDefaultCommand(
         new InstantCommand(
-            () ->
-                mDrivetrain.setControl(
-                    DrivetrainConstants.drive
-                        .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
-                        // Drive
-                        // forward
-                        // with
-                        // negative Y (forward)
-                        .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
-                        // Drive
-                        // left
-                        // with
-                        // negative
-                        // X
-                        // (left)
-                        .withRotationalRate(
-                            -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
+            () -> mDrivetrain.setControl(
+                DrivetrainConstants.drive
+                    .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
+                    // Drive
+                    // forward
+                    // with
+                    // negative Y (forward)
+                    .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
+                    // Drive
+                    // left
+                    // with
+                    // negative
+                    // X
+                    // (left)
+                    .withRotationalRate(
+                        -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
             mDrivetrain));
   }
 
