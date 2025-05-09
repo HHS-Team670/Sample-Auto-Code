@@ -113,22 +113,23 @@ public class OI {
 
     mDrivetrain.setDefaultCommand(
         new InstantCommand(
-            () -> mDrivetrain.setControl(
-                DrivetrainConstants.drive
-                    .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
-                    // Drive
-                    // forward
-                    // with
-                    // negative Y (forward)
-                    .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
-                    // Drive
-                    // left
-                    // with
-                    // negative
-                    // X
-                    // (left)
-                    .withRotationalRate(
-                        -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
+            () ->
+                mDrivetrain.setControl(
+                    DrivetrainConstants.drive
+                        .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
+                        // Drive
+                        // forward
+                        // with
+                        // negative Y (forward)
+                        .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
+                        // Drive
+                        // left
+                        // with
+                        // negative
+                        // X
+                        // (left)
+                        .withRotationalRate(
+                            -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
             mDrivetrain));
   }
 

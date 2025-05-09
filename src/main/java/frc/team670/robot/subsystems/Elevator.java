@@ -61,8 +61,9 @@ public class Elevator extends MotorizedSubsytem {
 
   private Elevator() {
 
-    leadMotor = TalonFXUtils.construct(
-        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
+    leadMotor =
+        TalonFXUtils.construct(
+            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
 
     sim = TalonFXUtils.simMotors.get(leadMotor);
 
@@ -73,16 +74,16 @@ public class Elevator extends MotorizedSubsytem {
       followerMotor.setControl(
           new Follower(ElevatorConstants.leadMotorID, ElevatorConstants.kInvertFollower));
       registerMotors(followerMotor);
-      followerMotor = TalonFXUtils.construct(
-          ElevatorConstants.followerMotorID,
-          ElevatorConstants.followerMotorConfiguration,
-          getName(),
-          0);
+      followerMotor =
+          TalonFXUtils.construct(
+              ElevatorConstants.followerMotorID,
+              ElevatorConstants.followerMotorConfiguration,
+              getName(),
+              0);
     }
 
     bottomLimitSwitch = new DigitalInput(9);
     topLimitSwitch = new DigitalInput(8);
-
   }
 
   public static Elevator getInstance() {
@@ -98,8 +99,9 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   public double getHeightInMeters() {
-    height = (leadMotor.getPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
-        * (ElevatorConstants.kCircumferenceSprocket);
+    height =
+        (leadMotor.getPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
+            * (ElevatorConstants.kCircumferenceSprocket);
     return height;
   }
 
@@ -116,7 +118,8 @@ public class Elevator extends MotorizedSubsytem {
     }
 
     double oldSetpoint = mSetpoint;
-    mSetpoint = (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+    mSetpoint =
+        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
     if (mSetpoint < 0) {
       mSetpoint = 0;
     }
@@ -146,8 +149,7 @@ public class Elevator extends MotorizedSubsytem {
     double currentTilterAngle = Tilter.getInstance().getMotorPositionInDegrees();
     // If no interference, continue moving
     if ((currentArmAngle > 0 && currentArmAngle < 90)
-        || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {
-    }
+        || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {}
   }
 
   private void zeroElevator() {
@@ -236,8 +238,9 @@ public class Elevator extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    height = (TalonFXUtils.simMotors.get(leadMotor).getSimPosition() / ElevatorConstants.kGearRatio)
-        * (ElevatorConstants.kCircumferenceSprocket);
+    height =
+        (TalonFXUtils.simMotors.get(leadMotor).getSimPosition() / ElevatorConstants.kGearRatio)
+            * (ElevatorConstants.kCircumferenceSprocket);
     return new Pose3d(0, 0, height, new Rotation3d());
   }
 }
