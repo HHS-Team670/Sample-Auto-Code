@@ -56,17 +56,16 @@ public class Elevator extends MotorizedSubsytem {
 
   private Elevator() {
 
-    leadMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
-    followerMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.followerMotorID,
-            ElevatorConstants.followerMotorConfiguration,
-            getName(),
-            0);
+    leadMotor = TalonFXUtils.construct(
+        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
+    followerMotor = TalonFXUtils.construct(
+        ElevatorConstants.followerMotorID,
+        ElevatorConstants.followerMotorConfiguration,
+        getName(),
+        0);
 
     registerMotors(leadMotor, followerMotor);
+    setGearRatio(ElevatorConstants.kGearRatio);
 
     followerMotor.setControl(
         new Follower(ElevatorConstants.leadMotorID, ElevatorConstants.kInvertFollower));
@@ -88,9 +87,8 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   public double getHeightInMeters() {
-    height =
-        (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
-            * (ElevatorConstants.kCircumferenceSprocket);
+    height = (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
+        * (ElevatorConstants.kCircumferenceSprocket);
     return height;
   }
 
@@ -106,8 +104,7 @@ public class Elevator extends MotorizedSubsytem {
     }
 
     double oldSetpoint = mSetpoint;
-    mSetpoint =
-        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+    mSetpoint = (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
     if (mSetpoint < 0) {
       mSetpoint = 0;
     }
