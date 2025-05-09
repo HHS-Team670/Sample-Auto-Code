@@ -7,6 +7,7 @@ package frc.team670.robot;
 import static frc.team670.libs.IO.XboxJoysticButtons.driverUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,6 +29,8 @@ import frc.team670.robot.subsystems.Elevator;
 import frc.team670.robot.subsystems.LED;
 import frc.team670.robot.subsystems.Tilter;
 import frc.team670.robot.subsystems.Vision;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -123,10 +126,12 @@ public class RobotContainer {
       }
     }
 
+    List<Pose3d> subsystemPositions = new ArrayList<>();
+
     for (Subsystem s : HealthChecker.getSubsystems()) {
       if (s instanceof MotorizedSubsytem) {
         MotorizedSubsytem motorSub = (MotorizedSubsytem) s;
-
+        subsystemPositions.add(motorSub.calculateSimPose());
       }
     }
 
@@ -142,6 +147,9 @@ public class RobotContainer {
       mDrivetrain.vySim = -driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed;
       mDrivetrain.omegaSim = -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate;
     }
+
+    Logger.recordOutput("Simulation/RobotPositions/subsystems", subsystemPositions.toArray(Pose3d[]::new));
+    Logger.recordOutput("Simulation/RobotPositions/robotPosition", mDrivetrain.getState().Pose);
 
     timer.restart();
   }
