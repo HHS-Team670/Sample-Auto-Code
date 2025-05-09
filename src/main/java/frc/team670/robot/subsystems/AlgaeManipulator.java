@@ -49,11 +49,12 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   public AlgaeManipulator() {
     setGearRatio(AlgaeManipulatorConstants.kGearRatio1);
     mode = Mode.IDLE;
-    mMotor = TalonFXUtils.construct(
-        AlgaeManipulatorConstants.kMotorID,
-        AlgaeManipulatorConstants.motorConfig,
-        getName(),
-        0);
+    mMotor =
+        TalonFXUtils.construct(
+            AlgaeManipulatorConstants.kMotorID,
+            AlgaeManipulatorConstants.motorConfig,
+            getName(),
+            0);
 
     registerMotors(mMotor);
   }
@@ -132,8 +133,7 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {
-  }
+  protected void checkInterference() {}
 
   @Override
   public void debugSubsystem() {

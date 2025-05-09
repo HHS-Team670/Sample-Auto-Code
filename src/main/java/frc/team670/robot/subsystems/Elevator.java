@@ -3,7 +3,6 @@ package frc.team670.robot.subsystems;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.team670.libs.Health.Health;
@@ -59,13 +58,15 @@ public class Elevator extends MotorizedSubsytem {
 
   private Elevator() {
 
-    leadMotor = TalonFXUtils.construct(
-        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
-    followerMotor = TalonFXUtils.construct(
-        ElevatorConstants.followerMotorID,
-        ElevatorConstants.followerMotorConfiguration,
-        getName(),
-        0);
+    leadMotor =
+        TalonFXUtils.construct(
+            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
+    followerMotor =
+        TalonFXUtils.construct(
+            ElevatorConstants.followerMotorID,
+            ElevatorConstants.followerMotorConfiguration,
+            getName(),
+            0);
 
     registerMotors(leadMotor, followerMotor);
     setGearRatio(ElevatorConstants.kGearRatio);
@@ -90,8 +91,9 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   public double getHeightInMeters() {
-    height = (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
-        * (ElevatorConstants.kCircumferenceSprocket);
+    height =
+        (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
+            * (ElevatorConstants.kCircumferenceSprocket);
     return height;
   }
 
@@ -107,7 +109,8 @@ public class Elevator extends MotorizedSubsytem {
     }
 
     double oldSetpoint = mSetpoint;
-    mSetpoint = (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+    mSetpoint =
+        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
     if (mSetpoint < 0) {
       mSetpoint = 0;
     }

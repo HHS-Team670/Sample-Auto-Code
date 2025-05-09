@@ -3,7 +3,6 @@ package frc.team670.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Pose3d;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
@@ -79,8 +78,7 @@ public class Climb extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {
-  }
+  protected void checkInterference() {}
 
   @Override
   public Pose3d calculateSimPose() {

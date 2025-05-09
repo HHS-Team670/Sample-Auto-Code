@@ -46,7 +46,8 @@ public class Claw extends MotorizedSubsytem {
 
   public Claw() {
     status = Status.IDLE;
-    mMotor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig, getName(), 0);
+    mMotor =
+        TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig, getName(), 0);
 
     registerMotors(mMotor);
 
@@ -146,8 +147,7 @@ public class Claw extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {
-  }
+  protected void checkInterference() {}
 
   @Override
   public Pose3d calculateSimPose() {
