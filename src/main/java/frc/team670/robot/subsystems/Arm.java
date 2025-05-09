@@ -2,10 +2,13 @@ package frc.team670.robot.subsystems;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.Robot;
 import frc.team670.robot.constants.ArmConstants;
@@ -24,8 +27,7 @@ public class Arm extends MotorizedSubsytem {
   private static Arm mInstance = new Arm();
 
   private Arm() {
-    mMotor =
-        TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig, getName(), -26.985);
+    mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig, getName(), -26.985);
     registerMotors(mMotor);
     setGearRatio(ArmConstants.kGearRatio);
   }
@@ -107,5 +109,10 @@ public class Arm extends MotorizedSubsytem {
         moveToTargetPosition(mSetpoint);
       }
     }
+  }
+
+  @Override
+  public Pose3d calculateSimPose() {
+    return TypeUtils.unimplemented();
   }
 }

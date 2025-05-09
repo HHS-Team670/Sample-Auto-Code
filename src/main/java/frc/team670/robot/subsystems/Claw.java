@@ -2,10 +2,12 @@ package frc.team670.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ClawConstants;
 import frc.team670.robot.subsystems.LED.LEDColor;
@@ -44,8 +46,7 @@ public class Claw extends MotorizedSubsytem {
 
   public Claw() {
     status = Status.IDLE;
-    mMotor =
-        TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig, getName(), 0);
+    mMotor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig, getName(), 0);
 
     registerMotors(mMotor);
 
@@ -145,5 +146,11 @@ public class Claw extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {}
+  protected void checkInterference() {
+  }
+
+  @Override
+  public Pose3d calculateSimPose() {
+    return TypeUtils.unimplemented();
+  }
 }

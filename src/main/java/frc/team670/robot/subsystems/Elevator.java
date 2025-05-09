@@ -3,10 +3,13 @@ package frc.team670.robot.subsystems;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ElevatorConstants;
 import frc.team670.robot.constants.RobotPosition;
@@ -56,15 +59,13 @@ public class Elevator extends MotorizedSubsytem {
 
   private Elevator() {
 
-    leadMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
-    followerMotor =
-        TalonFXUtils.construct(
-            ElevatorConstants.followerMotorID,
-            ElevatorConstants.followerMotorConfiguration,
-            getName(),
-            0);
+    leadMotor = TalonFXUtils.construct(
+        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
+    followerMotor = TalonFXUtils.construct(
+        ElevatorConstants.followerMotorID,
+        ElevatorConstants.followerMotorConfiguration,
+        getName(),
+        0);
 
     registerMotors(leadMotor, followerMotor);
     setGearRatio(ElevatorConstants.kGearRatio);
@@ -89,9 +90,8 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   public double getHeightInMeters() {
-    height =
-        (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
-            * (ElevatorConstants.kCircumferenceSprocket);
+    height = (leadMotor.getRotorPosition().getValueAsDouble() / ElevatorConstants.kGearRatio)
+        * (ElevatorConstants.kCircumferenceSprocket);
     return height;
   }
 
@@ -107,8 +107,7 @@ public class Elevator extends MotorizedSubsytem {
     }
 
     double oldSetpoint = mSetpoint;
-    mSetpoint =
-        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+    mSetpoint = (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
     if (mSetpoint < 0) {
       mSetpoint = 0;
     }
@@ -208,5 +207,10 @@ public class Elevator extends MotorizedSubsytem {
         this.getName() + "/MetersSetpoint",
         MustangMath.getMetersFromRotations(
             ElevatorConstants.kCircumferenceSprocket, gearRatio, mSetpoint));
+  }
+
+  @Override
+  public Pose3d calculateSimPose() {
+    return TypeUtils.unimplemented();
   }
 }

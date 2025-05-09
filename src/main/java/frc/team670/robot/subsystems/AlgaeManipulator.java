@@ -2,10 +2,12 @@ package frc.team670.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.TalonFXUtils;
+import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.commands.MoveToRobotPosition;
 import frc.team670.robot.constants.AlgaeManipulatorConstants;
@@ -47,12 +49,11 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   public AlgaeManipulator() {
     setGearRatio(AlgaeManipulatorConstants.kGearRatio1);
     mode = Mode.IDLE;
-    mMotor =
-        TalonFXUtils.construct(
-            AlgaeManipulatorConstants.kMotorID,
-            AlgaeManipulatorConstants.motorConfig,
-            getName(),
-            0);
+    mMotor = TalonFXUtils.construct(
+        AlgaeManipulatorConstants.kMotorID,
+        AlgaeManipulatorConstants.motorConfig,
+        getName(),
+        0);
 
     registerMotors(mMotor);
   }
@@ -131,10 +132,16 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {}
+  protected void checkInterference() {
+  }
 
   @Override
   public void debugSubsystem() {
     Logger.recordOutput(this.getName() + "/Mode", mode);
+  }
+
+  @Override
+  public Pose3d calculateSimPose() {
+    return TypeUtils.unimplemented();
   }
 }

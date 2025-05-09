@@ -123,6 +123,13 @@ public class RobotContainer {
       }
     }
 
+    for (Subsystem s : HealthChecker.getSubsystems()) {
+      if (s instanceof MotorizedSubsytem) {
+        MotorizedSubsytem motorSub = (MotorizedSubsytem) s;
+
+      }
+    }
+
     Pose2d oldPose = mDrivetrain.getState().Pose;
     Pose2d newPose = oldPose.exp(
         new Twist2d(
