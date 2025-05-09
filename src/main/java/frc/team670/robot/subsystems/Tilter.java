@@ -91,6 +91,7 @@ public class Tilter extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    return TypeUtils.unimplemented();
+    return new Pose3d();
+    // return TypeUtils.unimplemented();
   }
 }

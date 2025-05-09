@@ -142,6 +142,7 @@ public class AlgaeManipulator extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    return TypeUtils.unimplemented();
+    return new Pose3d();
+    // return TypeUtils.unimplemented();
   }
 }

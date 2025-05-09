@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
@@ -214,6 +215,9 @@ public class Elevator extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    return TypeUtils.unimplemented();
+    height =
+        (TalonFXUtils.simMotors.get(leadMotor).getSimPosition() / ElevatorConstants.kGearRatio)
+            * (ElevatorConstants.kCircumferenceSprocket);
+    return new Pose3d(0, 0, height, new Rotation3d());
   }
 }
