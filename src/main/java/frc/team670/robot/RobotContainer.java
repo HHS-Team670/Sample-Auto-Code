@@ -32,9 +32,12 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -75,19 +78,26 @@ public class RobotContainer {
     return Autos.getNamed("right");
   }
 
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
-  public void testInit() {}
+  public void testInit() {
+  }
 
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   public Timer timer = new Timer();
 
@@ -96,7 +106,8 @@ public class RobotContainer {
 
     List<Subsystem> allSubsystems = HealthChecker.getSubsystems();
     for (Subsystem sub : allSubsystems) {
-      if (sub instanceof MotorizedSubsytem) {}
+      if (sub instanceof MotorizedSubsytem) {
+      }
     }
   }
 
@@ -112,17 +123,13 @@ public class RobotContainer {
       }
     }
 
-    if (Robot.isSimulation()) {
-      Pose2d oldPose = mDrivetrain.getState().Pose;
-      Pose2d newPose =
-          oldPose.exp(
-              new Twist2d(
-                  mDrivetrain.vxSim * dt, mDrivetrain.vySim * dt, mDrivetrain.omegaSim * dt));
-      mDrivetrain.resetPose(newPose);
-    }
+    Pose2d oldPose = mDrivetrain.getState().Pose;
+    Pose2d newPose = oldPose.exp(
+        new Twist2d(
+            mDrivetrain.vxSim * dt, mDrivetrain.vySim * dt, mDrivetrain.omegaSim * dt));
+    mDrivetrain.resetPose(newPose);
 
-    if (Robot.isSimulation()
-        && DriverStation.isTeleopEnabled()
+    if (DriverStation.isTeleopEnabled()
         && !AlignToClosestAprilTag.AligningToAprilTag) {
       mDrivetrain.vxSim = -driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed;
       mDrivetrain.vySim = -driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed;

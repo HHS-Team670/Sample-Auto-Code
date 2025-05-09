@@ -14,17 +14,14 @@ public class ChoreoCommand extends CopyCommand {
   public Drivetrain drivetrain = Drivetrain.getInstance();
   Pose2d initialPose2d;
 
-  static int count = 0;
-
   public ChoreoCommand(String path) {
 
     try {
       this.path = PathPlannerPath.fromChoreoTrajectory(path);
-      PathPlannerTrajectory traj =
-          this.path.generateTrajectory(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().RawHeading,
-              RobotConfig.fromGUISettings());
+      PathPlannerTrajectory traj = this.path.generateTrajectory(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().RawHeading,
+          RobotConfig.fromGUISettings());
       initialPose2d = traj.getInitialPose();
       command = AutoBuilder.followPath(this.path);
       setCommand(command);
@@ -38,7 +35,6 @@ public class ChoreoCommand extends CopyCommand {
   @Override
   public void initialize() {
     drivetrain.resetPose(initialPose2d);
-    count++;
     super.initialize();
   }
 }
