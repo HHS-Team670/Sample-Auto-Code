@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
-import frc.team670.libs.Utilities.TypeUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
 import frc.team670.robot.constants.ElevatorConstants;
 import frc.team670.robot.constants.RobotPosition;
