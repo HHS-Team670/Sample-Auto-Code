@@ -44,7 +44,8 @@ public class Claw extends MotorizedSubsytem {
 
   public Claw() {
     status = Status.IDLE;
-    mMotor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig);
+    mMotor =
+        TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig, getName(), 0);
 
     registerMotors(mMotor);
 

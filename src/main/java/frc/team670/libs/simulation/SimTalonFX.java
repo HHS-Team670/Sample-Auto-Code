@@ -18,21 +18,39 @@ public class SimTalonFX {
   private final double maxVelocity; // rotations/sec
   private final double maxAcceleration; // rotations/sec^2
 
-  public SimTalonFX(TalonFX motor, double maxVelocity, double maxAcceleration) {
+  public String name;
+
+  public SimTalonFX(
+      TalonFX motor,
+      double maxVelocity,
+      double maxAcceleration,
+      String name,
+      double startPosition) {
     this.motor = motor;
     this.simState = motor.getSimState();
     this.maxVelocity = maxVelocity;
     this.maxAcceleration = maxAcceleration;
+    this.name = name;
     simMotors.add(this);
+    setStartPosition(startPosition);
   }
 
   public void setTargetPosition(double rotations) {
     this.targetPosition = rotations;
   }
 
+  public void setStartPosition(double start) {
+    targetPosition = start;
+    simVelocity = 0.0;
+  }
+
   public void update(double dtSeconds) {
+
     double error = targetPosition - motor.getPosition().getValueAsDouble();
-    double direction = Math.signum(error);
+    if (Math.abs(error) < 0.05) {
+      error = 0;
+    }
+    double direction = -Math.signum(error);
     double distanceRemaining = Math.abs(error);
 
     // Compute the velocity needed to stop at the target
@@ -53,5 +71,9 @@ public class SimTalonFX {
 
   public double getSimPosition() {
     return motor.getPosition().getValueAsDouble();
+  }
+
+  public double getSimTarget() {
+    return targetPosition;
   }
 }

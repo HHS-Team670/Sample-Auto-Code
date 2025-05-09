@@ -7,6 +7,7 @@ import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
+import frc.team670.robot.Robot;
 import frc.team670.robot.constants.ArmConstants;
 import frc.team670.robot.constants.RobotPosition;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +24,8 @@ public class Arm extends MotorizedSubsytem {
   private static Arm mInstance = new Arm();
 
   private Arm() {
-    mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig);
-    mMotor.setPosition(-26.985);
+    mMotor =
+        TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig, getName(), -26.985);
     registerMotors(mMotor);
     setGearRatio(ArmConstants.kGearRatio);
   }
@@ -56,6 +57,7 @@ public class Arm extends MotorizedSubsytem {
   }
 
   private void moveToTargetPosition(double positionInRotations) {
+
     mMotor.setControl(
         new MotionMagicVoltage(0)
             .withPosition(positionInRotations)
@@ -85,14 +87,25 @@ public class Arm extends MotorizedSubsytem {
     if (!Elevator.getInstance().hasReachedTargetPosition()) {
       // If interference, move towards arm safe position
       if (getMotorPositionInDegrees() < -45 || getMotorPositionInDegrees() > 180) {
-        moveToTargetPosition(
-            mSetpoint > MustangMath.getRotationsFromDegrees(gearRatio, -40)
-                ? mSetpoint
-                : MustangMath.getRotationsFromDegrees(gearRatio, -40));
+        if (Robot.isSimulation()) {
+          setMotorTarget(
+              mSetpoint > MustangMath.getRotationsFromDegrees(gearRatio, -40)
+                  ? mSetpoint
+                  : MustangMath.getRotationsFromDegrees(gearRatio, -40));
+        } else {
+          moveToTargetPosition(
+              mSetpoint > MustangMath.getRotationsFromDegrees(gearRatio, -40)
+                  ? mSetpoint
+                  : MustangMath.getRotationsFromDegrees(gearRatio, -40));
+        }
       }
     } else if ((mSetpoint != kNoSetPoint) && Elevator.getInstance().hasReachedTargetPosition()) {
       // Continue moving assuming there is a setpoint
-      moveToTargetPosition(mSetpoint);
+      if (Robot.isSimulation()) {
+        setMotorTarget(mSetpoint);
+      } else {
+        moveToTargetPosition(mSetpoint);
+      }
     }
   }
 }

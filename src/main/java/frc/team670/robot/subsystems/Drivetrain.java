@@ -51,7 +51,9 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
           new SimTalonFX(
               m,
               TalonFXUtils.getConfig(m).MotionMagic.MotionMagicCruiseVelocity,
-              TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration));
+              TalonFXUtils.getConfig(m).MotionMagic.MotionMagicAcceleration,
+              "DrivetrainMotor",
+              0));
     }
   }
 

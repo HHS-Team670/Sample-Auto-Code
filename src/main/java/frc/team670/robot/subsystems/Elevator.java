@@ -58,10 +58,13 @@ public class Elevator extends MotorizedSubsytem {
 
     leadMotor =
         TalonFXUtils.construct(
-            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration);
+            ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
     followerMotor =
         TalonFXUtils.construct(
-            ElevatorConstants.followerMotorID, ElevatorConstants.followerMotorConfiguration);
+            ElevatorConstants.followerMotorID,
+            ElevatorConstants.followerMotorConfiguration,
+            getName(),
+            0);
 
     registerMotors(leadMotor, followerMotor);
 
@@ -70,9 +73,6 @@ public class Elevator extends MotorizedSubsytem {
 
     bottomLimitSwitch = new DigitalInput(9);
     topLimitSwitch = new DigitalInput(8);
-
-    // Start at 0
-    leadMotor.setPosition(0);
   }
 
   public static Elevator getInstance() {

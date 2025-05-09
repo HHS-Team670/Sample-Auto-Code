@@ -26,9 +26,9 @@ public class Tilter extends MotorizedSubsytem {
   private Tilter() {
     this.mSetpoint = kNoSetPoint;
 
-    mMotor = TalonFXUtils.construct(TilterConstants.kTilterMotorID, TilterConstants.motorConfig);
-
-    mMotor.setPosition(0);
+    mMotor =
+        TalonFXUtils.construct(
+            TilterConstants.kTilterMotorID, TilterConstants.motorConfig, getName(), 0);
 
     registerMotors(mMotor);
 

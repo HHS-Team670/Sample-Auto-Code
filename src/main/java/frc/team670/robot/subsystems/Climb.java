@@ -42,10 +42,8 @@ public class Climb extends MotorizedSubsytem {
   }
 
   public Climb() {
-    motor = TalonFXUtils.construct(ClimbConstants.MOTOR_ID, ClimbConstants.upConfig);
+    motor = TalonFXUtils.construct(ClimbConstants.MOTOR_ID, ClimbConstants.upConfig, getName(), 0);
     registerMotors(motor);
-    motor.setPosition(0);
-
     setGearRatio(ClimbConstants.GEAR_RATIO);
   }
 

@@ -91,13 +91,16 @@ public class TalonFXUtils {
    *     configuration settings to the motor using a loop that tries
    * @return The method is returning the TalonFX made.
    */
-  public static TalonFX construct(int motorID, TalonFXConfiguration config) {
+  public static TalonFX construct(
+      int motorID, TalonFXConfiguration config, String name, double startPosition) {
     TalonFX motor = new TalonFX(motorID);
     SimTalonFX sim =
         new SimTalonFX(
             motor,
             config.MotionMagic.MotionMagicCruiseVelocity,
-            config.MotionMagic.MotionMagicAcceleration);
+            config.MotionMagic.MotionMagicAcceleration,
+            name,
+            startPosition);
     simMotors.put(motor, sim);
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 30; ++i) {
@@ -112,6 +115,7 @@ public class TalonFXUtils {
     }
 
     motor.setNeutralMode(NeutralModeValue.Brake);
+    motor.setPosition(startPosition);
 
     return motor;
   }

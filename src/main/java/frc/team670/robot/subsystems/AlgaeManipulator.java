@@ -49,7 +49,10 @@ public class AlgaeManipulator extends MotorizedSubsytem {
     mode = Mode.IDLE;
     mMotor =
         TalonFXUtils.construct(
-            AlgaeManipulatorConstants.kMotorID, AlgaeManipulatorConstants.motorConfig);
+            AlgaeManipulatorConstants.kMotorID,
+            AlgaeManipulatorConstants.motorConfig,
+            getName(),
+            0);
 
     registerMotors(mMotor);
   }
