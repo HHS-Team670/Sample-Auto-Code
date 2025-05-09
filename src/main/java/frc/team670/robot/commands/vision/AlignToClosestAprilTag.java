@@ -13,7 +13,6 @@ import frc.team670.robot.OI;
 import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AlignToClosestAprilTag extends Command {
@@ -155,13 +154,12 @@ public class AlignToClosestAprilTag extends Command {
     double rotationValue = (rotation * rotationSpeedModifier + rotationAdjustment);
 
     simDistToAprilTag = mVision.getClosestSimTarget(cameraSideToUse);
-    Logger.recordOutput("Simulation/XDist", simDistToAprilTag.getX());
-    Logger.recordOutput("Simulation/YDist", simDistToAprilTag.getY());
     mDrivetrain.vxSim = (simDistToAprilTag.getX() * xSpeedModifier + xAdjustment);
     mDrivetrain.vySim = (simDistToAprilTag.getY() * ySpeedModifier + yAdjustment);
     mDrivetrain.omegaSim =
-        (simDistToAprilTag.getRotation().getRadians() * rotationSpeedModifier + rotationAdjustment);
-    mDrivetrain.omegaSim = 0;
+        -1
+            * (simDistToAprilTag.getRotation().getRadians() * rotationSpeedModifier
+                + rotationAdjustment);
 
     mDrivetrain.setControl(
         drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));

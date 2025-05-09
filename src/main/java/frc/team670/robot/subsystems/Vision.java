@@ -233,15 +233,20 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
             .findFirst();
     if (matchingKey.isPresent()) {
       Logger.recordOutput("Simulation/AprilTagID", matchingKey.get());
+    } else {
+      Logger.recordOutput("Simulation/AprilTagID", "null");
     }
 
     Pose2d tagPoseInMeters =
         new Pose2d(
             Units.inchesToMeters(bestTag.getX()),
             Units.inchesToMeters(bestTag.getY()),
-            bestTag.getRotation());
+            new Rotation2d(
+                (currentPose.getRotation().getRadians())
+                    - (bestTag.getRotation().getRadians() + Math.PI) % (2 * Math.PI)));
 
-    return tagPoseInMeters.relativeTo(cameraPose);
+    Pose2d finalPos = tagPoseInMeters.relativeTo(cameraPose);
+    return new Pose2d(finalPos.getTranslation(), tagPoseInMeters.getRotation());
   }
 
   public void debugSubsystem() {}

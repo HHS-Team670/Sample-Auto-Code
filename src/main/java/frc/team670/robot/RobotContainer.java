@@ -72,7 +72,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     Autos.configureAutoBuilder();
-    return Autos.getNamed("left");
+    return Autos.getNamed("right");
   }
 
   public void robotPeriodic() {}
@@ -128,10 +128,6 @@ public class RobotContainer {
       mDrivetrain.vySim = -driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed;
       mDrivetrain.omegaSim = -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate;
     }
-
-    Logger.recordOutput("Simulation/vx", mDrivetrain.vxSim);
-    Logger.recordOutput("Simulation/vy", mDrivetrain.vySim);
-    Logger.recordOutput("Simulation/omega", mDrivetrain.omegaSim);
 
     timer.restart();
   }
