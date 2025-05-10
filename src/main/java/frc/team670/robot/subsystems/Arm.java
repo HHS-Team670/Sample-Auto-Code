@@ -9,9 +9,9 @@ import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
+import frc.team670.robot.Robot;
 import frc.team670.robot.RobotPosition;
 import frc.team670.robot.constants.ArmConstants;
-import frc.team670.robot.robot.Robot;
 
 import org.littletonrobotics.junction.Logger;
 

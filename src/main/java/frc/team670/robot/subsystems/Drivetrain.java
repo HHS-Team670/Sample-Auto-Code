@@ -16,8 +16,8 @@ import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
+import frc.team670.robot.Robot;
 import frc.team670.robot.constants.DrivetrainConstants;
-import frc.team670.robot.robot.Robot;
 
 import java.util.ArrayList;
 import java.util.List;

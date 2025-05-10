@@ -1,9 +1,8 @@
-package frc.team670.robot.robot;
+package frc.team670.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.team670.libs.Health.HealthChecker;
-import frc.team670.robot.RobotContainer;
 
 import java.io.File;
 import java.time.LocalDateTime;

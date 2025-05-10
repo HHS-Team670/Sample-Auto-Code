@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
-import frc.team670.robot.robot.Robot;
+import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
 import org.photonvision.targeting.PhotonTrackedTarget;

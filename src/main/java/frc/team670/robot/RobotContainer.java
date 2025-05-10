@@ -18,7 +18,6 @@ import frc.team670.libs.Health.HealthChecker;
 import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag;
 import frc.team670.robot.constants.DrivetrainConstants;
-import frc.team670.robot.robot.Robot;
 import frc.team670.robot.subsystems.AlgaeManipulator;
 import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Claw;
