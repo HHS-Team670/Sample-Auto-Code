@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.robot.OI;
-import frc.team670.robot.Robot;
+import frc.team670.robot.robot.Robot;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Vision;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -32,8 +32,8 @@ public class AlignToClosestAprilTag extends Command {
 
   private Timer timer = new Timer();
 
-  SwerveRequest.RobotCentric drive =
-      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private Drivetrain mDrivetrain = Drivetrain.getInstance();
 
   private double xDist = 0;
@@ -118,15 +118,13 @@ public class AlignToClosestAprilTag extends Command {
       }
     } else if (hasFoundAprilTag) {
       try {
-        Pose2d lastAprilTag =
-            cameraName == "ArducamL"
-                ? mVision.lastSeenAprilTagLeftCam
-                : mVision.lastSeenAprilTagRightCam;
+        Pose2d lastAprilTag = cameraName == "ArducamL"
+            ? mVision.lastSeenAprilTagLeftCam
+            : mVision.lastSeenAprilTagRightCam;
 
-        Pose2d lastRobotCentriChange =
-            cameraName == "ArducamL"
-                ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
-                : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
+        Pose2d lastRobotCentriChange = cameraName == "ArducamL"
+            ? mVision.robotCentricChangeSinceSeenLeftCamAprilTag
+            : mVision.robotCentricChangeSinceSeenRightCamAprilTag;
 
         double xChange = lastRobotCentriChange.getX();
         double yChange = lastRobotCentriChange.getY();
@@ -156,10 +154,9 @@ public class AlignToClosestAprilTag extends Command {
     simDistToAprilTag = mVision.getClosestSimTarget(cameraSideToUse);
     mDrivetrain.vxSim = (simDistToAprilTag.getX() * xSpeedModifier + xAdjustment);
     mDrivetrain.vySim = (simDistToAprilTag.getY() * ySpeedModifier + yAdjustment);
-    mDrivetrain.omegaSim =
-        -1
-            * (simDistToAprilTag.getRotation().getRadians() * rotationSpeedModifier
-                + rotationAdjustment);
+    mDrivetrain.omegaSim = -1
+        * (simDistToAprilTag.getRotation().getRadians() * rotationSpeedModifier
+            + rotationAdjustment);
 
     mDrivetrain.setControl(
         drive.withVelocityX(xValue).withVelocityY(yValue).withRotationalRate(rotationValue));

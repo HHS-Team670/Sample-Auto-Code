@@ -6,7 +6,7 @@ import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
-import frc.team670.robot.constants.RobotPosition;
+import frc.team670.robot.RobotPosition;
 import frc.team670.robot.constants.TilterConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,8 +14,7 @@ public class Tilter extends MotorizedSubsytem {
   private TalonFX mMotor;
 
   private double mSetpoint;
-  private static final double kNoSetPoint = 9999;
-  ;
+  private static final double kNoSetPoint = 9999;;
   private double offset = 0;
 
   private static Tilter mInstance = new Tilter();
@@ -27,9 +26,8 @@ public class Tilter extends MotorizedSubsytem {
   private Tilter() {
     this.mSetpoint = kNoSetPoint;
 
-    mMotor =
-        TalonFXUtils.construct(
-            TilterConstants.kTilterMotorID, TilterConstants.motorConfig, getName(), 0);
+    mMotor = TalonFXUtils.construct(
+        TilterConstants.kTilterMotorID, TilterConstants.motorConfig, getName(), 0);
 
     registerMotors(mMotor);
 

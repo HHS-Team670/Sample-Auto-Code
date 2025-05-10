@@ -1,6 +1,9 @@
-package frc.team670.robot.constants;
+package frc.team670.robot;
 
 public enum RobotPosition {
+
+  // elevator, arm, tilter
+
   STOW(0, -90, -64.26269),
 
   L1(0.84, 220.393, -46.766),

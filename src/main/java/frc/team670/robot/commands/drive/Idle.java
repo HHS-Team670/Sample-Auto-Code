@@ -1,4 +1,4 @@
-package frc.team670.robot.commands;
+package frc.team670.robot.commands.drive;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.InstantCommand;

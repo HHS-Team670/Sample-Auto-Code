@@ -1,7 +1,7 @@
-package frc.team670.robot.commands;
+package frc.team670.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team670.robot.constants.RobotPosition;
+import frc.team670.robot.RobotPosition;
 import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Elevator;
 import frc.team670.robot.subsystems.Tilter;

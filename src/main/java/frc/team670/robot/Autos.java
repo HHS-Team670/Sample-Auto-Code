@@ -1,4 +1,4 @@
-package frc.team670.robot.Auton;
+package frc.team670.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,7 +16,6 @@ import frc.team670.robot.commands.claw.CoralIntake;
 import frc.team670.robot.commands.claw.StartClawEject;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
-import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.Drivetrain;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,7 +102,7 @@ public class Autos {
           // case
           () -> false,
           mDrivetrain // Subsystem for requirements
-          );
+      );
 
     } catch (Exception ex) {
       DriverStation.reportError(

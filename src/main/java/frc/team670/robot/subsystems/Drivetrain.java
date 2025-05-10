@@ -16,8 +16,9 @@ import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.simulation.SimTalonFX;
 import frc.team670.libs.subsystems.DebugSubsytem;
 import frc.team670.libs.subsystems.HealthySubsytem;
-import frc.team670.robot.Robot;
 import frc.team670.robot.constants.DrivetrainConstants;
+import frc.team670.robot.robot.Robot;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -99,8 +100,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   public double metersToMotorRotations(double meters) {
-    double wheelDegrees =
-        meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
+    double wheelDegrees = meters / (DrivetrainConstants.kWheelRadius.baseUnitMagnitude() * 2 * Math.PI) * 360;
     return MustangMath.getRotationsFromDegrees(DrivetrainConstants.kDriveGearRatio, wheelDegrees);
   }
 
@@ -111,7 +111,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
   }
 
   /**
-   * For this specific subsytem it dosent matter because you will allways have a DriveConstants
+   * For this specific subsytem it dosent matter because you will allways have a
+   * DriveConstants
    * class
    *
    * @param constants

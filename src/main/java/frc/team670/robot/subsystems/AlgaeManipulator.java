@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
-import frc.team670.robot.commands.MoveToRobotPosition;
+import frc.team670.robot.RobotPosition;
+import frc.team670.robot.commands.drive.MoveToRobotPosition;
 import frc.team670.robot.constants.AlgaeManipulatorConstants;
-import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.Elevator.ElevatorState;
 import org.littletonrobotics.junction.Logger;
 
@@ -48,12 +48,11 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   public AlgaeManipulator() {
     setGearRatio(AlgaeManipulatorConstants.kGearRatio1);
     mode = Mode.IDLE;
-    mMotor =
-        TalonFXUtils.construct(
-            AlgaeManipulatorConstants.kMotorID,
-            AlgaeManipulatorConstants.motorConfig,
-            getName(),
-            0);
+    mMotor = TalonFXUtils.construct(
+        AlgaeManipulatorConstants.kMotorID,
+        AlgaeManipulatorConstants.motorConfig,
+        getName(),
+        0);
 
     registerMotors(mMotor);
   }
@@ -132,7 +131,8 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {}
+  protected void checkInterference() {
+  }
 
   @Override
   public void debugSubsystem() {

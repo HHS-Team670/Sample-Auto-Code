@@ -1,4 +1,4 @@
-package frc.team670.robot.commands;
+package frc.team670.robot.commands.drive;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -27,10 +27,10 @@ public class Park extends Command {
     mDrivetrain.setControl(idle);
 
     SwerveModule.ModuleRequest[] requests = {
-      new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
-      new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-      new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-      new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+        new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
+        new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+        new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+        new ModuleRequest().withState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
     };
 
     int i = 0;

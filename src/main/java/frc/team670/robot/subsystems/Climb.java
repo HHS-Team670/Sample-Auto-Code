@@ -8,9 +8,10 @@ import frc.team670.libs.Health.Health;
 import frc.team670.libs.Utilities.MustangMath;
 import frc.team670.libs.Utilities.TalonFXUtils;
 import frc.team670.libs.subsystems.MotorizedSubsytem;
-import frc.team670.robot.commands.MoveToRobotPosition;
+import frc.team670.robot.RobotPosition;
+import frc.team670.robot.commands.drive.MoveToRobotPosition;
 import frc.team670.robot.constants.ClimbConstants;
-import frc.team670.robot.constants.RobotPosition;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Climb extends MotorizedSubsytem {
@@ -77,7 +78,8 @@ public class Climb extends MotorizedSubsytem {
   }
 
   @Override
-  protected void checkInterference() {}
+  protected void checkInterference() {
+  }
 
   @Override
   public Pose3d calculateSimPose() {

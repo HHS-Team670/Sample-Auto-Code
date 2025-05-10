@@ -13,18 +13,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.libs.UtilityCommands.ButtonCommand;
 import frc.team670.robot.commands.AlgaeManipulator.AlgaeManipulatorIntake;
 import frc.team670.robot.commands.AlgaeManipulator.ManipulateAlgae;
-import frc.team670.robot.commands.Idle;
 import frc.team670.robot.commands.OI.SetCameraSide;
 import frc.team670.robot.commands.OI.SetCoralMode;
-import frc.team670.robot.commands.Park;
 import frc.team670.robot.commands.claw.CoralIntake;
 import frc.team670.robot.commands.claw.StartClawEject;
 import frc.team670.robot.commands.climb.SetClimbState;
+import frc.team670.robot.commands.drive.Idle;
+import frc.team670.robot.commands.drive.Park;
 import frc.team670.robot.commands.tilter.TilterOffset;
 import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
 import frc.team670.robot.constants.DrivetrainConstants;
-import frc.team670.robot.constants.RobotPosition;
 import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Climb.ClimbState;
 import frc.team670.robot.subsystems.Drivetrain;
@@ -118,23 +117,22 @@ public class OI {
 
     mDrivetrain.setDefaultCommand(
         new InstantCommand(
-            () ->
-                mDrivetrain.setControl(
-                    DrivetrainConstants.drive
-                        .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
-                        // Drive
-                        // forward
-                        // with
-                        // negative Y (forward)
-                        .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
-                        // Drive
-                        // left
-                        // with
-                        // negative
-                        // X
-                        // (left)
-                        .withRotationalRate(
-                            -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
+            () -> mDrivetrain.setControl(
+                DrivetrainConstants.drive
+                    .withVelocityX(-driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed)
+                    // Drive
+                    // forward
+                    // with
+                    // negative Y (forward)
+                    .withVelocityY(-driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed)
+                    // Drive
+                    // left
+                    // with
+                    // negative
+                    // X
+                    // (left)
+                    .withRotationalRate(
+                        -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate)),
             mDrivetrain));
   }
 
