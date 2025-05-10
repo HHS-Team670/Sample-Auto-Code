@@ -19,6 +19,7 @@ public class SimTalonFX {
   private final double maxAcceleration; // rotations/sec^2
 
   private boolean isInvered;
+  private boolean hasTarget = false;
 
   public String name;
 
@@ -41,6 +42,7 @@ public class SimTalonFX {
 
   public void setTargetPosition(double rotations) {
     this.targetPosition = rotations;
+    hasTarget = true;
   }
 
   public void setStartPosition(double start) {
@@ -50,34 +52,40 @@ public class SimTalonFX {
 
   public void update(double dtSeconds) {
 
-    double error = targetPosition - motor.getPosition().getValueAsDouble();
-    if (Math.abs(error) < 0.05) {
-      error = 0;
+    if (hasTarget) {
+      double error = targetPosition - motor.getPosition().getValueAsDouble();
+      if (Math.abs(error) < 0.05) {
+        error = 0;
+      }
+      double direction = Math.signum(error);
+      if (isInvered) {
+        direction = -direction;
+      }
+      double distanceRemaining = Math.abs(error);
+
+      // Compute the velocity needed to stop at the target
+      double maxReachableVelocity = Math.sqrt(2 * maxAcceleration * distanceRemaining);
+      double targetVelocity = Math.min(maxVelocity, maxReachableVelocity);
+      targetVelocity *= direction;
+
+      // Accelerate toward target velocity
+      double accel = targetVelocity - simVelocity;
+      accel = MathUtil.clamp(accel, -maxAcceleration * dtSeconds, maxAcceleration * dtSeconds);
+
+      simVelocity += accel;
+
+      // Write values into simulation
+      simState.addRotorPosition(simVelocity * dtSeconds);
+      simState.setRotorVelocity(simVelocity);
     }
-    double direction = Math.signum(error);
-    if (isInvered) {
-      direction = -direction;
-    }
-    double distanceRemaining = Math.abs(error);
-
-    // Compute the velocity needed to stop at the target
-    double maxReachableVelocity = Math.sqrt(2 * maxAcceleration * distanceRemaining);
-    double targetVelocity = Math.min(maxVelocity, maxReachableVelocity);
-    targetVelocity *= direction;
-
-    // Accelerate toward target velocity
-    double accel = targetVelocity - simVelocity;
-    accel = MathUtil.clamp(accel, -maxAcceleration * dtSeconds, maxAcceleration * dtSeconds);
-
-    simVelocity += accel;
-
-    // Write values into simulation
-    simState.addRotorPosition(simVelocity * dtSeconds);
-    simState.setRotorVelocity(simVelocity);
   }
 
   public double getSimPosition() {
     return motor.getPosition().getValueAsDouble();
+  }
+
+  public void clearSetpoint() {
+    hasTarget = false;
   }
 
   public double getSimTarget() {

@@ -25,6 +25,7 @@ import frc.team670.robot.commands.vision.AlignToClosestAprilTag.CAMERA_SIDE;
 import frc.team670.robot.commands.vision.PrepareShootCoral;
 import frc.team670.robot.constants.DrivetrainConstants;
 import frc.team670.robot.constants.RobotPosition;
+import frc.team670.robot.subsystems.Arm;
 import frc.team670.robot.subsystems.Climb.ClimbState;
 import frc.team670.robot.subsystems.Drivetrain;
 import frc.team670.robot.subsystems.Elevator;
@@ -87,7 +88,11 @@ public class OI {
 
     Driver_ButtonBack.onTrue(new Park());
 
-    Driver_ButtonStart.onTrue(() -> Elevator.getInstance().setTargetHeight(RobotPosition.L4));
+    Driver_ButtonStart.onTrue(
+        () -> {
+          Elevator.getInstance().setTargetHeight(RobotPosition.L4);
+          Arm.getInstance().setMotorTargetDegrees(-80);
+        });
   }
 
   public static void configureOperatorControls() {

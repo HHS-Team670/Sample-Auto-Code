@@ -6,6 +6,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.libs.Health.Health;
@@ -69,7 +70,18 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         vxSim = speeds.vxMetersPerSecond;
         vySim = speeds.vyMetersPerSecond;
         omegaSim = speeds.omegaRadiansPerSecond;
-      } else if (request instanceof SwerveRequest) {
+      } else if (request instanceof FieldCentric) {
+        FieldCentric fieldReq = (FieldCentric) request;
+        double vFieldX = fieldReq.VelocityX;
+        double vFieldY = fieldReq.VelocityY;
+
+        double currentRot = getState().Pose.getRotation().getRadians();
+
+        double vRobotX = vFieldX * Math.cos(currentRot) + vFieldY * Math.sin(currentRot);
+        double vRobotY = -vFieldX * Math.sin(currentRot) + vFieldY * Math.cos(currentRot);
+
+        vxSim = vRobotX;
+        vySim = vRobotY;
       }
     } else {
       super.setControl(request);

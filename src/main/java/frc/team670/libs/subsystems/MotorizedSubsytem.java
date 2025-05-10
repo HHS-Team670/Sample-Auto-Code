@@ -156,7 +156,7 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    * @param theta the target postion for the motor in roations defaults to the motor at index 0 the
    *     first motor in `registerMotors()`
    */
-  protected void setMotorTargetDegrees(double theta) {
+  public void setMotorTargetDegrees(double theta) {
     setMotorTargetDegrees(theta, 0);
   }
 }

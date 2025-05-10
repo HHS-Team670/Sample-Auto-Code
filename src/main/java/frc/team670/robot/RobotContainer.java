@@ -115,14 +115,17 @@ public class RobotContainer {
     mDrivetrain.resetPose(newPose);
 
     if (DriverStation.isTeleopEnabled() && !AlignToClosestAprilTag.AligningToAprilTag) {
-      mDrivetrain.vxSim = -driverUtils.getLeftStickY() * DrivetrainConstants.MaxSpeed;
-      mDrivetrain.vySim = -driverUtils.getLeftStickX() * DrivetrainConstants.MaxSpeed;
+      // mDrivetrain.vxSim = -driverUtils.getLeftStickY() *
+      // DrivetrainConstants.MaxSpeed;
+      // mDrivetrain.vySim = -driverUtils.getLeftStickX() *
+      // DrivetrainConstants.MaxSpeed;
       mDrivetrain.omegaSim = -driverUtils.getRightStickX() * DrivetrainConstants.MaxAngularRate;
     }
 
     List<Pose3d> subsystemPositions = new ArrayList<>();
 
     subsystemPositions.add(mElevator.calculateSimPose());
+    subsystemPositions.add(mArm.calculateSimPose());
 
     Logger.recordOutput(
         "Simulation/RobotPositions/subsystems", subsystemPositions.toArray(Pose3d[]::new));

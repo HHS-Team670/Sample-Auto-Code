@@ -137,6 +137,12 @@ public class Elevator extends MotorizedSubsytem {
   }
 
   protected void checkInterference() {
+
+    if (Robot.isSimulation()) {
+      setMotorTarget(mSetpoint);
+      return;
+    }
+
     if (!hasBeenZeroed) {
       return;
     }
