@@ -3,6 +3,8 @@ package frc.team670.libs.simulation;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
+import frc.team670.libs.Utilities.MustangMath;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class SimTalonFX {
   private final double maxVelocity; // rotations/sec
   private final double maxAcceleration; // rotations/sec^2
 
+  private final double gearRatio;
+
   private boolean isInvered;
   private boolean hasTarget = false;
 
@@ -29,13 +33,15 @@ public class SimTalonFX {
       double maxAcceleration,
       String name,
       double startPosition,
-      boolean isInvered) {
+      boolean isInvered,
+      double gearRatio) {
     this.motor = motor;
     this.simState = motor.getSimState();
     this.maxVelocity = maxVelocity;
     this.maxAcceleration = maxAcceleration;
     this.name = name;
     this.isInvered = isInvered;
+    this.gearRatio = gearRatio;
     simMotors.add(this);
     setStartPosition(startPosition);
   }
@@ -86,14 +92,15 @@ public class SimTalonFX {
   public void update(double dtSeconds) {
 
     if (hasTarget) {
-      double error = targetPosition - motor.getPosition().getValueAsDouble();
-      if (Math.abs(error) < 0.05) {
+      double target = MustangMath.posCoterm(MustangMath.getDegreesFromRotations(gearRatio, targetPosition));
+      double currPos = MustangMath
+          .posCoterm(MustangMath.getDegreesFromRotations(gearRatio, motor.getPosition().getValueAsDouble()));
+
+      double error = target - currPos;
+      if (Math.abs(error) < 5) {
         error = 0;
       }
       double direction = Math.signum(error);
-      if (isInvered) {
-        direction = -direction;
-      }
       double distanceRemaining = Math.abs(error);
 
       // Compute the velocity needed to stop at the target

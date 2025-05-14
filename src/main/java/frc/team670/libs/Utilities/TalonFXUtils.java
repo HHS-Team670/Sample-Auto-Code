@@ -124,7 +124,7 @@ public class TalonFXUtils {
    * @return The method `construct` is returning a `TalonFX` object.
    */
   public static TalonFX construct(
-      int motorID, TalonFXConfiguration config, String name, double startPosition) {
+      int motorID, TalonFXConfiguration config, String name, double startPosition, double gearRatio) {
     TalonFX motor = new TalonFX(motorID);
     SimTalonFX sim = new SimTalonFX(
         motor,
@@ -132,7 +132,8 @@ public class TalonFXUtils {
         config.MotionMagic.MotionMagicAcceleration,
         name,
         startPosition,
-        config.MotorOutput.Inverted == InvertedValue.Clockwise_Positive);
+        config.MotorOutput.Inverted == InvertedValue.Clockwise_Positive,
+        gearRatio);
     simMotors.put(motor, sim);
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 30; ++i) {

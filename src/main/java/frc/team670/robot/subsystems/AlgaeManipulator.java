@@ -52,7 +52,8 @@ public class AlgaeManipulator extends MotorizedSubsytem {
         AlgaeManipulatorConstants.kMotorID,
         AlgaeManipulatorConstants.motorConfig,
         getName(),
-        0);
+        0,
+        gearRatio);
 
     registerMotors(mMotor);
   }

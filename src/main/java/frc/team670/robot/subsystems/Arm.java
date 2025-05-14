@@ -27,9 +27,10 @@ public class Arm extends MotorizedSubsytem {
   private static Arm mInstance = new Arm();
 
   private Arm() {
-    mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig, getName(), -26.985);
-    registerMotors(mMotor);
     setGearRatio(ArmConstants.kGearRatio);
+    mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig, getName(), -26.985,
+        gearRatio);
+    registerMotors(mMotor);
   }
 
   public static Arm getInstance() {
@@ -115,7 +116,7 @@ public class Arm extends MotorizedSubsytem {
   public Pose3d calculateSimPose() {
     Pose3d armPose = new Pose3d(ArmConstants.simXZero, ArmConstants.simYZero,
         ArmConstants.simZZero + Elevator.getInstance().calculateSimPose().getZ(),
-        new Rotation3d(0, ((getMotorPostion() + 26.985) / gearRatio) * 2 * Math.PI, 0));
+        new Rotation3d(0, ((getMotorPostion()) / gearRatio) * 2 * Math.PI, 0));
 
     return armPose;
   }

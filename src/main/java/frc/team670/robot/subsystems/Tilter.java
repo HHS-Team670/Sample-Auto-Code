@@ -25,13 +25,13 @@ public class Tilter extends MotorizedSubsytem {
 
   private Tilter() {
     this.mSetpoint = kNoSetPoint;
+    setGearRatio(TilterConstants.kGearRatio);
 
     mMotor = TalonFXUtils.construct(
-        TilterConstants.kTilterMotorID, TilterConstants.motorConfig, getName(), 0);
+        TilterConstants.kTilterMotorID, TilterConstants.motorConfig, getName(), 0, gearRatio);
 
     registerMotors(mMotor);
 
-    setGearRatio(TilterConstants.kGearRatio);
   }
 
   public void setTargetPosition(RobotPosition pos) {

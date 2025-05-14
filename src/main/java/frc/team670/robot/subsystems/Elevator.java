@@ -61,14 +61,14 @@ public class Elevator extends MotorizedSubsytem {
   SimTalonFX sim;
 
   private Elevator() {
+    setGearRatio(ElevatorConstants.kGearRatio);
 
     leadMotor = TalonFXUtils.construct(
-        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0);
+        ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration, getName(), 0, gearRatio);
 
     sim = TalonFXUtils.simMotors.get(leadMotor);
 
     registerMotors(leadMotor);
-    setGearRatio(ElevatorConstants.kGearRatio);
 
     if (Robot.isReal()) {
       followerMotor.setControl(
@@ -78,7 +78,7 @@ public class Elevator extends MotorizedSubsytem {
           ElevatorConstants.followerMotorID,
           ElevatorConstants.followerMotorConfiguration,
           getName(),
-          0);
+          0, gearRatio);
     }
 
     bottomLimitSwitch = new DigitalInput(9);

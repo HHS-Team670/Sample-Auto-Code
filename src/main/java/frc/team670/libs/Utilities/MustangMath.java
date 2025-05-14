@@ -155,4 +155,21 @@ public class MustangMath {
       double circumferenceSprocket, double gearRatio, double meters) {
     return (meters / circumferenceSprocket) * gearRatio;
   }
+
+  /**
+   * The function posCoterm takes an angle in degrees and returns its positive
+   * coterminal angle within
+   * the range of 0 to 360 degrees.
+   * 
+   * @param theta The `posCoterm` method you provided takes an angle `theta` as
+   *              input and returns the
+   *              positive coterminal angle of that input angle. The positive
+   *              coterminal angle is the equivalent
+   *              angle between 0 and 360 degrees.
+   * @return The method `posCoterm` returns the positive coterminal angle of the
+   *         input angle `theta`.
+   */
+  public static double posCoterm(double theta) {
+    return (((theta) % 360) + 360) % 360;
+  }
 }
