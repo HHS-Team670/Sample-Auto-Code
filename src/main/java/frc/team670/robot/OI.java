@@ -90,7 +90,7 @@ public class OI {
     Driver_ButtonStart.onTrue(
         () -> {
           Elevator.getInstance().setTargetHeight(RobotPosition.L4);
-          Arm.getInstance().setMotorTargetDegrees(-80);
+          Arm.getInstance().setTargetPosition(RobotPosition.L4);
         });
   }
 

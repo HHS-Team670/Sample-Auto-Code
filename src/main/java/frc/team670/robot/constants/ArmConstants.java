@@ -17,8 +17,7 @@ public class ArmConstants {
   public static final double kI = 0;
   public static final double kD = 0;
   public static final double kS = 0.225;
-  public static final double kA =
-      0.01; // 3.6363636364 this is average acc 12/3.3, 0.08 is max 12/150
+  public static final double kA = 0.01; // 3.6363636364 this is average acc 12/3.3, 0.08 is max 12/150
   public static final double kV = 0.08;
   public static final double kG = 0.175;
 
@@ -47,8 +46,12 @@ public class ArmConstants {
   public static final double kMaxAngle = 285;
   public static final double kMinAngle = -90;
 
+  public static final double simXZero = 0.161; // -0.15;
+  public static final double simYZero = 0.063; // -0.065;
+  public static final double simZZero = 0.96;
+
   public static final float[] kSoftLimits = {
-    (float) (kMaxAngle / 360 * kGearRatio), (float) (kMinAngle / 360 * kGearRatio)
+      (float) (kMaxAngle / 360 * kGearRatio), (float) (kMinAngle / 360 * kGearRatio)
   };
 
   static {
@@ -68,11 +71,9 @@ public class ArmConstants {
     // motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     // motorConfig.Feedback.SensorToMechanismRatio = ArmConstants.kGearRatio;
 
-    motorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        ArmConstants.MotionMagicCruiseVelocity / 60; // Units:
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.MotionMagicCruiseVelocity / 60; // Units:
     // rotations/sec
-    motorConfig.MotionMagic.MotionMagicAcceleration =
-        ArmConstants.MotionMagicAcceleration / 60; // Units:
+    motorConfig.MotionMagic.MotionMagicAcceleration = ArmConstants.MotionMagicAcceleration / 60; // Units:
     // rotations/sec^2
     motorConfig.MotionMagic.MotionMagicJerk = ArmConstants.MotionMagicJerk;
 

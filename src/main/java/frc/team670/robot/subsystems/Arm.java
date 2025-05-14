@@ -113,7 +113,8 @@ public class Arm extends MotorizedSubsytem {
 
   @Override
   public Pose3d calculateSimPose() {
-    Pose3d armPose = new Pose3d(0, 0, Elevator.getInstance().calculateSimPose().getZ(),
+    Pose3d armPose = new Pose3d(ArmConstants.simXZero, ArmConstants.simYZero,
+        ArmConstants.simZZero + Elevator.getInstance().calculateSimPose().getZ(),
         new Rotation3d(0, ((getMotorPostion() + 26.985) / gearRatio) * 2 * Math.PI, 0));
 
     return armPose;
