@@ -3,7 +3,6 @@ package frc.team670.libs.simulation;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
-import frc.team670.libs.Utilities.MustangMath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,20 +74,6 @@ public class SimTalonFX {
   public void setStartPosition(double start) {
     targetPosition = start;
     simVelocity = 0.0;
-  }
-
-  public static double getShortestAngleBetween(double fromDeg, double toDeg) {
-    double error = toDeg - fromDeg;
-
-    // Normalize the angle to be between -180 and 180 degrees
-    if (error > 180) {
-      error -= 360;
-    } else if (error < -180) {
-      error += 360;
-    }
-
-    return error;
-
   }
 
   /**
