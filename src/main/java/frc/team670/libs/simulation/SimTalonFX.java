@@ -77,6 +77,20 @@ public class SimTalonFX {
     simVelocity = 0.0;
   }
 
+  public static double getShortestAngleBetween(double fromDeg, double toDeg) {
+    double error = toDeg - fromDeg;
+
+    // Normalize the angle to be between -180 and 180 degrees
+    if (error > 180) {
+      error -= 360;
+    } else if (error < -180) {
+      error += 360;
+    }
+
+    return error;
+
+  }
+
   /**
    * The update function calculates and applies acceleration to reach a target
    * position with a maximum
@@ -92,16 +106,27 @@ public class SimTalonFX {
   public void update(double dtSeconds) {
 
     if (hasTarget) {
-      double target = MustangMath.posCoterm(MustangMath.getDegreesFromRotations(gearRatio, targetPosition));
-      double currPos = MustangMath
-          .posCoterm(MustangMath.getDegreesFromRotations(gearRatio, motor.getPosition().getValueAsDouble()));
 
-      double error = target - currPos;
-      if (Math.abs(error) < 5) {
+      double mechanismPositionDeg = getSimPosition() / gearRatio * 360;
+      double targetPostionDeg = targetPosition / gearRatio * 360;
+      if (Math.abs((targetPostionDeg - 360)) < Math.abs(targetPostionDeg)) {
+        targetPostionDeg = targetPostionDeg - 360;
+      }
+      double angleErrorDeg = targetPostionDeg - mechanismPositionDeg;
+
+      // Convert angular error back into motor rotations
+      double error = angleErrorDeg * gearRatio / 360;
+
+      if (Math.abs(error) < 2e-2) {
         error = 0;
       }
+
       double direction = Math.signum(error);
       double distanceRemaining = Math.abs(error);
+
+      if (isInvered) {
+        direction = -direction;
+      }
 
       // Compute the velocity needed to stop at the target
       double maxReachableVelocity = Math.sqrt(2 * maxAcceleration * distanceRemaining);
