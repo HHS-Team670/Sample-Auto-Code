@@ -17,9 +17,10 @@ public class Tilter extends MotorizedSubsytem {
   ;
   private double offset = 0;
 
-  private static Tilter mInstance = new Tilter();
+  private static Tilter mInstance;
 
-  public static Tilter getInstance() {
+  public static synchronized Tilter getInstance() {
+    mInstance = mInstance == null ? new Tilter() : mInstance;
     return mInstance;
   }
 
@@ -39,22 +40,6 @@ public class Tilter extends MotorizedSubsytem {
     setMotorTarget(pos.getTilterAngle() + offset);
   }
 
-  @Override
-  public Health checkHealth() {
-    if (mMotor == null || !mMotor.isAlive()) {
-      return Health.RED;
-    }
-    return Health.GREEN;
-  }
-
-  @Override
-  public void debugSubsystem() {
-    Logger.recordOutput(this.getName() + "/CurrentPositionDegrees", getMotorPositionInDegrees());
-    Logger.recordOutput(
-        this.getName() + "/SetpointDegrees",
-        mSetpoint == kNoSetPoint ? -1 : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
-  }
-
   public void addOffset(double change) {
     offset += change;
     mSetpoint += MustangMath.getRotationsFromDegrees(gearRatio, change);
@@ -63,6 +48,17 @@ public class Tilter extends MotorizedSubsytem {
   public boolean hasReachedTargetPosition() {
     return (MustangMath.doublesEqual(
         getMotorPostion(), mSetpoint, TilterConstants.kAllowedErrorRotations));
+  }
+
+  @Override
+  public void mustangPeriodic() {}
+
+  @Override
+  public void debugSubsystem() {
+    Logger.recordOutput(this.getName() + "/CurrentPositionDegrees", getMotorPositionInDegrees());
+    Logger.recordOutput(
+        this.getName() + "/SetpointDegrees",
+        mSetpoint == kNoSetPoint ? -1 : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
   }
 
   protected void checkInterference() {
@@ -82,8 +78,11 @@ public class Tilter extends MotorizedSubsytem {
     }
   }
 
-  public boolean clearSetpoint() {
-    mSetpoint = kNoSetPoint;
-    return true;
+  @Override
+  public Health checkHealth() {
+    if (mMotor == null || !mMotor.isAlive()) {
+      return Health.RED;
+    }
+    return Health.GREEN;
   }
 }

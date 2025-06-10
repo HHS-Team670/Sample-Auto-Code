@@ -47,9 +47,10 @@ public class Vision implements Subsystem, HealthySubsytem, DebugSubsytem {
   public PhotonTrackedTarget leftCamAprilTag = null;
   public PhotonTrackedTarget rightCamAprilTag = null;
 
-  public static Vision mInstance = new Vision();
+  public static Vision mInstance;
 
-  public static Vision getInstance() {
+  public static synchronized Vision getInstance() {
+    mInstance = mInstance == null ? new Vision() : mInstance;
     return mInstance;
   }
 

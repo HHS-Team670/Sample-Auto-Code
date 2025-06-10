@@ -12,13 +12,15 @@ import frc.team670.robot.subsystems.LED.LEDColor;
 import org.littletonrobotics.junction.Logger;
 
 public class Claw extends MotorizedSubsytem {
-  private boolean hasCoral = false;
+  private LED led = LED.getInstance();
 
   public enum Status {
     EJECTING,
     INTAKING,
     IDLE;
   }
+
+  private boolean hasCoral = false;
 
   protected Timer m_timer = new Timer();
 
@@ -32,17 +34,16 @@ public class Claw extends MotorizedSubsytem {
   private double intakingSpeed = ClawConstants.kRollingSpeed;
   private double idleSpeed = ClawConstants.kIdleSpeed;
 
-  private LED led = LED.getInstance();
-
-  private static Claw mInstance = new Claw();
-
   private double motorSpeed = 0;
 
-  public static Claw getInstance() {
+  private static Claw mInstance;
+
+  public static synchronized Claw getInstance() {
+    mInstance = mInstance == null ? new Claw() : mInstance;
     return mInstance;
   }
 
-  public Claw() {
+  private Claw() {
     status = Status.IDLE;
     mMotor = TalonFXUtils.construct(ClawConstants.kMotorID, ClawConstants.motorConfig);
 
@@ -103,9 +104,7 @@ public class Claw extends MotorizedSubsytem {
   }
 
   @Override
-  public void periodic() {
-    super.periodic();
-
+  public void mustangPeriodic() {
     switch (status) {
       case INTAKING:
         if (DriverStation.isAutonomousEnabled()) {

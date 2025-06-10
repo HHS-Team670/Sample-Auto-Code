@@ -19,16 +19,19 @@ public class Elevator extends MotorizedSubsytem {
   private DigitalInput bottomLimitSwitch;
   private DigitalInput topLimitSwitch;
 
-  private static Elevator mInstance = new Elevator();
-
-  public ElevatorState state = ElevatorState.STOW;
   private double height;
+
   private double mSetpoint;
+
   private TalonFX leadMotor;
   private TalonFX followerMotor;
+
   private double offset;
+
   private boolean hasBeenZeroed = false;
   public static boolean hasOverridedLimitSwitches = false;
+
+  public ElevatorState state = ElevatorState.STOW;
 
   public enum ElevatorState {
     STOW(0),
@@ -54,8 +57,14 @@ public class Elevator extends MotorizedSubsytem {
     }
   }
 
-  private Elevator() {
+  private static Elevator mInstance;
 
+  public static synchronized Elevator getInstance() {
+    mInstance = mInstance == null ? new Elevator() : mInstance;
+    return mInstance;
+  }
+
+  private Elevator() {
     leadMotor =
         TalonFXUtils.construct(
             ElevatorConstants.leadMotorID, ElevatorConstants.leadMotorConfiguration);
@@ -75,8 +84,8 @@ public class Elevator extends MotorizedSubsytem {
     leadMotor.setPosition(0);
   }
 
-  public static Elevator getInstance() {
-    return mInstance;
+  public void setTargetHeight(RobotPosition robotPos) {
+    setTargetHeightInMeters(robotPos.getElevatorHeight());
   }
 
   public boolean isBottomLimitSwitchTripped() {
@@ -94,11 +103,7 @@ public class Elevator extends MotorizedSubsytem {
     return height;
   }
 
-  public void setTargetHeight(RobotPosition robotPos) {
-    moveToTargetHeight(robotPos.getElevatorHeight());
-  }
-
-  public void moveToTargetHeight(double meters) {
+  private void setTargetHeightInMeters(double meters) {
     if (isTopLimitSwitchTripped()) {
       if (meters > this.getHeightInMeters()) {
         return;
@@ -107,7 +112,11 @@ public class Elevator extends MotorizedSubsytem {
 
     double oldSetpoint = mSetpoint;
     mSetpoint =
-        (meters / ElevatorConstants.kCircumferenceSprocket) * (ElevatorConstants.kGearRatio);
+        MustangMath.getRotationsFromMeters(
+            ElevatorConstants.kCircumferenceSprocket, gearRatio, meters);
+
+    // just a precaution incase the operator tries to go too far down using manual
+    // controls
     if (mSetpoint < 0) {
       mSetpoint = 0;
     }
@@ -116,19 +125,6 @@ public class Elevator extends MotorizedSubsytem {
         || !checkSoftLimits(mSetpoint)) {
       mSetpoint = oldSetpoint;
       return;
-    }
-  }
-
-  protected void checkInterference() {
-    if (!hasBeenZeroed) {
-      return;
-    }
-    double currentArmAngle = Arm.getInstance().getMotorPositionInDegrees();
-    double currentTilterAngle = Tilter.getInstance().getMotorPositionInDegrees();
-    // If no interference, continue moving
-    if ((currentArmAngle > 0 && currentArmAngle < 90)
-        || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {
-      leadMotor.setControl(new MotionMagicVoltage(0).withPosition(mSetpoint).withSlot(0));
     }
   }
 
@@ -146,21 +142,12 @@ public class Elevator extends MotorizedSubsytem {
 
   public void addOffset(double offset) {
     this.offset += offset;
-    this.moveToTargetHeight(RobotPosition.currentRobotPos.getElevatorHeight() + this.offset);
+    this.setTargetHeightInMeters(RobotPosition.currentRobotPos.getElevatorHeight() + this.offset);
   }
 
   public void resetOffset() {
     this.offset = 0;
-    this.moveToTargetHeight(RobotPosition.currentRobotPos.getElevatorHeight() + offset);
-  }
-
-  @Override
-  public Health checkHealth() {
-    return Health.GREEN;
-  }
-
-  public void goToZero() {
-    addOffset(-0.05);
+    this.setTargetHeightInMeters(RobotPosition.currentRobotPos.getElevatorHeight() + offset);
   }
 
   public boolean checkSoftLimits(double setpoint) {
@@ -172,33 +159,16 @@ public class Elevator extends MotorizedSubsytem {
     return true;
   }
 
-  @Override
-  public void periodic() {
-    super.periodic();
-
-    if (isBottomLimitSwitchTripped() && !hasBeenZeroed) {
-      resetOffset();
-      zeroElevator();
-
-      hasBeenZeroed = true;
-    } else if (!hasBeenZeroed) {
-      goToZero();
-    }
-
-    if (isTopLimitSwitchTripped()) {
-      stop();
-    } else {
-      checkInterference();
-    }
-  }
-
   public void stop() {
     leadMotor.set(0);
   }
 
-  public void setHaBeenZeroedToFalse() {
-    hasBeenZeroed = false;
+  public void goToZero() {
+    addOffset(-0.05);
   }
+
+  @Override
+  public void mustangPeriodic() {}
 
   @Override
   public void debugSubsystem() {
@@ -207,5 +177,35 @@ public class Elevator extends MotorizedSubsytem {
         this.getName() + "/MetersSetpoint",
         MustangMath.getMetersFromRotations(
             ElevatorConstants.kCircumferenceSprocket, gearRatio, mSetpoint));
+  }
+
+  protected void checkInterference() {
+    if (isBottomLimitSwitchTripped() && !hasBeenZeroed) {
+      resetOffset();
+      zeroElevator();
+
+      hasBeenZeroed = true;
+    } else if (!hasBeenZeroed) {
+      goToZero();
+      return;
+    }
+
+    if (isTopLimitSwitchTripped()) {
+      stop();
+      return;
+    }
+
+    double currentArmAngle = Arm.getInstance().getMotorPositionInDegrees();
+    double currentTilterAngle = Tilter.getInstance().getMotorPositionInDegrees();
+    // If no interference, continue moving
+    if ((currentArmAngle > 0 && currentArmAngle < 90)
+        || ((currentArmAngle > -50 && currentArmAngle < 180) && currentTilterAngle > 78)) {
+      leadMotor.setControl(new MotionMagicVoltage(0).withPosition(mSetpoint));
+    }
+  }
+
+  @Override
+  public Health checkHealth() {
+    return Health.GREEN;
   }
 }

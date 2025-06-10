@@ -14,8 +14,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Climb extends MotorizedSubsytem {
 
-  private static Climb mInstance = new Climb();
   private TalonFX motor;
+
   private TalonFXConfiguration upConfig;
   private TalonFXConfiguration downConfig;
 
@@ -37,11 +37,14 @@ public class Climb extends MotorizedSubsytem {
     }
   }
 
-  public static Climb getInstance() {
+  private static Climb mInstance;
+
+  public static synchronized Climb getInstance() {
+    mInstance = mInstance == null ? new Climb() : mInstance;
     return mInstance;
   }
 
-  public Climb() {
+  private Climb() {
     motor = TalonFXUtils.construct(ClimbConstants.MOTOR_ID, ClimbConstants.upConfig);
     registerMotors(motor);
     motor.setPosition(0);
@@ -57,20 +60,15 @@ public class Climb extends MotorizedSubsytem {
     } else {
       TalonFXUtils.applyConfig(motor, upConfig);
     }
-    moveClimb(newState);
-  }
 
-  private void moveClimb(ClimbState climbState) {
-    motor.setControl(new MotionMagicVoltage(climbState.getPosition()).withSlot(0));
+    motor.setControl(new MotionMagicVoltage(climbState.getPosition()));
     if (climbState == ClimbState.CLIMB) {
       new MoveToRobotPosition(RobotPosition.STOW).schedule();
     }
   }
 
   @Override
-  public Health checkHealth() {
-    return Health.GREEN;
-  }
+  public void mustangPeriodic() {}
 
   @Override
   public void debugSubsystem() {
@@ -79,4 +77,9 @@ public class Climb extends MotorizedSubsytem {
 
   @Override
   protected void checkInterference() {}
+
+  @Override
+  public Health checkHealth() {
+    return Health.GREEN;
+  }
 }

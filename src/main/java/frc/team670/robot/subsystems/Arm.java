@@ -1,6 +1,5 @@
 package frc.team670.robot.subsystems;
 
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import frc.team670.libs.Health.Health;
@@ -20,7 +19,14 @@ public class Arm extends MotorizedSubsytem {
 
   private double offset = 0;
 
-  private static Arm mInstance = new Arm();
+  private double feedForward = 0;
+
+  private static Arm mInstance;
+
+  public static synchronized Arm getInstance() {
+    mInstance = mInstance == null ? new Arm() : mInstance;
+    return mInstance;
+  }
 
   private Arm() {
     mMotor = TalonFXUtils.construct(ArmConstants.kMotorID, ArmConstants.motorConfig);
@@ -29,12 +35,8 @@ public class Arm extends MotorizedSubsytem {
     setGearRatio(ArmConstants.kGearRatio);
   }
 
-  public static Arm getInstance() {
-    return mInstance;
-  }
-
   public void setTargetPosition(RobotPosition pos) {
-    setMotorTargetDegrees(pos.getArmAngle() + offset);
+    mSetpoint = MustangMath.getRotationsFromDegrees(gearRatio, pos.getArmAngle() + offset);
   }
 
   public void addOffset(double change) {
@@ -48,23 +50,12 @@ public class Arm extends MotorizedSubsytem {
   }
 
   @Override
-  public Health checkHealth() {
-    if (mMotor == null || !mMotor.isAlive()) {
-      return Health.RED;
-    }
-    return Health.GREEN;
-  }
-
-  private void moveToTargetPosition(double positionInRotations) {
-    mMotor.setControl(
-        new MotionMagicVoltage(0)
-            .withPosition(positionInRotations)
-            .withSlot(0)
-            .withFeedForward(
-                ArmConstants.kG
-                    * Math.cos(
-                        Units.degreesToRadians(
-                            360.0 * mMotor.getPosition().getValueAsDouble() / gearRatio))));
+  public void mustangPeriodic() {
+    feedForward =
+        ArmConstants.kG
+            * Math.cos(
+                Units.degreesToRadians(
+                    360.0 * mMotor.getPosition().getValueAsDouble() / gearRatio));
   }
 
   @Override
@@ -75,24 +66,29 @@ public class Arm extends MotorizedSubsytem {
         mSetpoint == kNoSetPoint ? -1 : MustangMath.getDegreesFromRotations(gearRatio, mSetpoint));
   }
 
-  public boolean clearSetpoint() {
-    mSetpoint = kNoSetPoint;
-    return true;
-  }
-
   @Override
   protected void checkInterference() {
     if (!Elevator.getInstance().hasReachedTargetPosition()) {
       // If interference, move towards arm safe position
       if (getMotorPositionInDegrees() < -45 || getMotorPositionInDegrees() > 180) {
-        moveToTargetPosition(
+        setMotorTargetFeedForward(
             mSetpoint > MustangMath.getRotationsFromDegrees(gearRatio, -40)
                 ? mSetpoint
-                : MustangMath.getRotationsFromDegrees(gearRatio, -40));
+                : MustangMath.getRotationsFromDegrees(gearRatio, -40),
+            0,
+            feedForward);
       }
     } else if ((mSetpoint != kNoSetPoint) && Elevator.getInstance().hasReachedTargetPosition()) {
       // Continue moving assuming there is a setpoint
-      moveToTargetPosition(gearRatio);
+      setMotorTargetFeedForward(mSetpoint, 0, feedForward);
     }
+  }
+
+  @Override
+  public Health checkHealth() {
+    if (mMotor == null || !mMotor.isAlive()) {
+      return Health.RED;
+    }
+    return Health.GREEN;
   }
 }

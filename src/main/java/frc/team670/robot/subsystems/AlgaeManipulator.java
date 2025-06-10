@@ -17,6 +17,7 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   Elevator mElevator = Elevator.getInstance();
   Arm mArm = Arm.getInstance();
   Tilter mTilter = Tilter.getInstance();
+  private LED mLED = LED.getInstance();
 
   public enum Mode {
     EJECTING,
@@ -35,8 +36,6 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   private double intakingSpeed = AlgaeManipulatorConstants.kRollingSpeed;
   private double idleSpeed = AlgaeManipulatorConstants.kIdleSpeed;
 
-  private LED mLED = LED.getInstance();
-
   private static AlgaeManipulator mInstance;
 
   public static synchronized AlgaeManipulator getInstance() {
@@ -44,7 +43,7 @@ public class AlgaeManipulator extends MotorizedSubsytem {
     return mInstance;
   }
 
-  public AlgaeManipulator() {
+  private AlgaeManipulator() {
     setGearRatio(AlgaeManipulatorConstants.kGearRatio1);
     mode = Mode.IDLE;
     mMotor =
@@ -84,19 +83,8 @@ public class AlgaeManipulator extends MotorizedSubsytem {
     mMotor.set(idleSpeed);
   }
 
-  /** Checking for hardware breaks with the motor */
   @Override
-  public Health checkHealth() {
-    if (mMotor == null || !mMotor.isAlive()) {
-      return Health.RED;
-    }
-    return Health.GREEN;
-  }
-
-  @Override
-  public void periodic() {
-    super.periodic();
-
+  public void mustangPeriodic() {
     switch (mode) {
       case INTAKING:
         if (DriverStation.isTeleopEnabled()) {
@@ -128,10 +116,18 @@ public class AlgaeManipulator extends MotorizedSubsytem {
   }
 
   @Override
+  public void debugSubsystem() {
+    Logger.recordOutput(this.getName() + "/Mode", mode);
+  }
+
+  @Override
   protected void checkInterference() {}
 
   @Override
-  public void debugSubsystem() {
-    Logger.recordOutput(this.getName() + "/Mode", mode);
+  public Health checkHealth() {
+    if (mMotor == null || !mMotor.isAlive()) {
+      return Health.RED;
+    }
+    return Health.GREEN;
   }
 }

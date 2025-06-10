@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.libs.UtilityCommands.ButtonCommand;
 import frc.team670.robot.commands.AlgaeManipulator.AlgaeManipulatorIntake;
 import frc.team670.robot.commands.AlgaeManipulator.ManipulateAlgae;
+import frc.team670.robot.commands.AlgaeManipulator.ScoreBarge;
 import frc.team670.robot.commands.Idle;
 import frc.team670.robot.commands.OI.SetCameraSide;
 import frc.team670.robot.commands.OI.SetCoralMode;
@@ -48,8 +49,7 @@ public class OI {
     Driver_RightBumper.onTrue(
         new ButtonCommand(new CoralIntake(), new AlgaeManipulatorIntake(true), OI::isCoralModeOn));
     Driver_LeftBumper.onTrue(
-        new ButtonCommand(
-            new StartClawEject(), new AlgaeManipulatorIntake(false), OI::isCoralModeOn));
+        new ButtonCommand(new StartClawEject(), new ScoreBarge(), OI::isCoralModeOn));
     Driver_ButtonA.onTrue(
         new ButtonCommand(
             new PrepareShootCoral(RobotPosition.L1),

@@ -17,9 +17,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     implements Subsystem, HealthySubsytem, DebugSubsytem {
-  public static Drivetrain mInstance = new Drivetrain();
+  public static Drivetrain mInstance;
 
-  public static Drivetrain getInstance() {
+  public static synchronized Drivetrain getInstance() {
+    mInstance = mInstance == null ? new Drivetrain() : mInstance;
     return mInstance;
   }
 
@@ -50,6 +51,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     debugSubsystem();
   }
 
+  public void debugSubsystem() {
+    Logger.recordOutput(this.getName() + "/CurrentPose2d", this.getState().Pose);
+  }
+
   /**
    * For this specific subsytem it dosent matter because you will allways have a DriveConstants
    * class
@@ -77,9 +82,5 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
       healthState = Health.GREEN;
     }
     return healthState;
-  }
-
-  public void debugSubsystem() {
-    Logger.recordOutput(this.getName() + "/CurrentPose2d", this.getState().Pose);
   }
 }

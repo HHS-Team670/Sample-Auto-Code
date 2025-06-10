@@ -25,16 +25,13 @@ public class LED implements Subsystem, DebugSubsytem, HealthySubsytem {
     CLIMB;
   }
 
-  private static LED mInstance = new LED();
   private LEDColor allianceColor;
   private int previousPathID;
 
-  // The commented out `getInstance()` method is a common design pattern called
-  // the Singleton
-  // pattern. It ensures that only one instance of the `LED` class is created and
-  // provides a way to
-  // access that instance globally.
-  public static LED getInstance() {
+  private static LED mInstance;
+
+  public static synchronized LED getInstance() {
+    mInstance = mInstance == null ? new LED() : mInstance;
     return mInstance;
   }
 

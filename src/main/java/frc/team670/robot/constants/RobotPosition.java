@@ -3,8 +3,9 @@ package frc.team670.robot.constants;
 public enum RobotPosition {
   STOW(0, -90, -64.26269),
 
-  L1(0.84, 220.393, -46.766),
-  L2(0.5, -86.047396, 78.93457),
+  L1(0.198, 212.683, -32.842),
+
+  L2(0.5, -86.047396, 82.7),
 
   L3(0, 39, -85),
 
@@ -16,9 +17,11 @@ public enum RobotPosition {
 
   PROCESSOR(0.186, 202.113, 96.123),
 
-  BARGE(1.775, 61.749, 89.211),
+  BARGE(1.775, 110, 89.211),
 
-  STATION(0.83782, 208.236, -64.26269),
+  SCOREBARGE(1.775, 90, 89.211),
+
+  STATION(0.83782, 208.236, -61.26269),
   ;
 
   double armPos;

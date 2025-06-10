@@ -59,11 +59,15 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
     this.gearRatio = value;
   }
 
+  public abstract void mustangPeriodic();
+
+  // DO NOT OVERRIDE - USE MUSTANGPERIODIC INSTEAD
   @Override
   public void periodic() {
     HealthChecker.reportHealth(this, checkHealth());
     checkInterference();
     debugSubsystem();
+    mustangPeriodic();
   }
 
   /**
@@ -100,6 +104,12 @@ public abstract class MotorizedSubsytem implements HealthySubsytem, Subsystem, D
    */
   public void setMotorTarget(double rotations, int index) {
     motors.get(index).setControl(new MotionMagicVoltage(0).withPosition(rotations));
+  }
+
+  public void setMotorTargetFeedForward(double rotations, int index, double feedForward) {
+    motors
+        .get(index)
+        .setControl(new MotionMagicVoltage(0).withPosition(rotations).withFeedForward(feedForward));
   }
 
   /**
